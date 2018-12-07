@@ -49,11 +49,21 @@ import com.qualcomm.robotcore.util.Range;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Basic: Linear OpMode", group="Linear Opmode")
+@TeleOp(name="Mainbot Code", group="Linear Opmode")
 public class Mainbot_Code extends LinearOpMode {
 
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
+
+    private DcMotor frontleftDrive = null;
+    private DcMotor frontrightDrive = null;
+    private DcMotor backleftDrive = null;
+    private DcMotor backrightDrive = null;
+
+    private DcMotor liftDrive = null;
+
+    private TouchSensor topLift = null;
+    private TouchSensor lowerLift = null;
 
     private DcMotor intakeMotor = null;
 
@@ -66,29 +76,79 @@ public class Mainbot_Code extends LinearOpMode {
 
     @Override
     public void runOpMode() {
+        telemetry.addData("Status", "Initialized");
+        telemetry.update();
 
-        intakeMotor = hardwareMap.get(DcMotor.class, "im");
+        frontleftDrive = hardwareMap.get(DcMotor.class, "fl");
+        frontrightDrive = hardwareMap.get(DcMotor.class, "fr");
+        backleftDrive = hardwareMap.get(DcMotor.class, "bl");
+        backrightDrive = hardwareMap.get(DcMotor.class, "br");
+
+        liftDrive = hardwareMap.get(DcMotor.class, "ld");
+
+/*        topLift = hardwareMap.get(TouchSensor.class, "tl");
+        lowerLift = hardwareMap.get(TouchSensor.class, "ll");*/
+
+        //Gyro is "imu"
+
+        frontrightDrive.setDirection(DcMotor.Direction.REVERSE);
+        backrightDrive.setDirection(DcMotor.Direction.REVERSE);
+
+
+        frontleftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontrightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        backleftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backrightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        liftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        /*intakeMotor = hardwareMap.get(DcMotor.class, "im");
 
         linearMotor = hardwareMap.get(DcMotor.class, "lm");
 
         linearSlideOut = hardwareMap.get(TouchSensor.class, "lso");
-        linearSlideIn = hardwareMap.get(TouchSensor.class, "lsi");
+        linearSlideIn = hardwareMap.get(TouchSensor.class, "lsi");*/
 
-        telemetry.addData("Status", "Initialized");
-        telemetry.update();
+        double frontleftDrivePower = 0;
+        double frontrightDrivePower = 0;
+
+        double backleftDrivePower = 0;
+        double backrightDrivePower = 0;
 
         waitForStart();
         runtime.reset();
 
         while (opModeIsActive()) {
+            frontleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
+            frontrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
 
-            intakeMotor.setPower(Range.clip(gamepad1.right_trigger - gamepad1.left_trigger, -1, 1));
+            backleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
+            backrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
+
+
+            frontleftDrivePower = Range.clip(frontleftDrivePower, -1, 1);
+            frontrightDrivePower = Range.clip(frontrightDrivePower, -1, 1);
+
+            backleftDrivePower = Range.clip(backleftDrivePower, -1, 1);
+            backrightDrivePower = Range.clip(backrightDrivePower, -1, 1);
+
+
+            frontleftDrive.setPower(frontleftDrivePower);
+            frontrightDrive.setPower(frontrightDrivePower);
+
+            backleftDrive.setPower(backleftDrivePower);
+            backrightDrive.setPower(backrightDrivePower);
+
+            liftDrive.setPower(-gamepad2.right_stick_y);
+
+            /*intakeMotor.setPower(Range.clip(gamepad1.right_trigger - gamepad1.left_trigger, -1, 1));
 
             if (linearSlideIn.isPressed() && linearPower < 0);
             else linearMotor.setPower(linearPower);
 
             if (linearSlideOut.isPressed() && linearPower > 0);
-            else linearMotor.setPower(linearPower);
+            else linearMotor.setPower(linearPower);*/
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();

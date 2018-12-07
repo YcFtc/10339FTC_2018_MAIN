@@ -36,6 +36,7 @@ import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -57,7 +58,7 @@ import org.firstinspires.ftc.teamcode.R;
 
 import java.util.Locale;
 
-@TeleOp(name="Autonomous Main", group="Autonomous")
+@Autonomous(name="Autonomous Main", group="Autonomous")
 public class Autonomous_Main extends LinearOpMode {
 
     private ElapsedTime runtime = new ElapsedTime();
@@ -97,8 +98,10 @@ public class Autonomous_Main extends LinearOpMode {
 
         liftDrive = hardwareMap.get(DcMotor.class, "ld");
 
-        topLift = hardwareMap.get(TouchSensor.class, "tl");
-        lowerLift = hardwareMap.get(TouchSensor.class, "ll");
+/*        topLift = hardwareMap.get(TouchSensor.class, "tl");
+        lowerLift = hardwareMap.get(TouchSensor.class, "ll");*/
+
+        //Gyro is "imu"
 
         frontrightDrive.setDirection(DcMotor.Direction.REVERSE);
         backrightDrive.setDirection(DcMotor.Direction.REVERSE);
@@ -177,16 +180,16 @@ public class Autonomous_Main extends LinearOpMode {
 
             liftDrive.setPower(0);*/
 
-            sleep(250000000);
-
             //change msPollInterval if phone is lagging too much
             imu.startAccelerationIntegration(new Position(), new Velocity(), 200);
 
-            RUN_DRIVE_MANUAL(0.2, -0.2);
+            RUN_DRIVE_MANUAL(0.5, -0.5);
 
             angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
 
             while (angles.firstAngle < -90) {
+                composeTelemetry();
+                telemetry.update();
                 angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
                 sleep(100);
             }
