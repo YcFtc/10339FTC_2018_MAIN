@@ -31,6 +31,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -62,6 +63,8 @@ public class Mainbot_Code extends LinearOpMode {
 
     private DcMotor liftDrive = null;
 
+    private Servo RGB = null;
+
     private TouchSensor topLift = null;
     private TouchSensor lowerLift = null;
 
@@ -84,7 +87,9 @@ public class Mainbot_Code extends LinearOpMode {
         backleftDrive = hardwareMap.get(DcMotor.class, "bl");
         backrightDrive = hardwareMap.get(DcMotor.class, "br");
 
-        liftDrive = hardwareMap.get(DcMotor.class, "ld");
+//        liftDrive = hardwareMap.get(DcMotor.class, "ld");
+
+//        RGB = hardwareMap.get(Servo.class, "rgb");
 
 /*        topLift = hardwareMap.get(TouchSensor.class, "tl");
         lowerLift = hardwareMap.get(TouchSensor.class, "ll");*/
@@ -116,6 +121,8 @@ public class Mainbot_Code extends LinearOpMode {
         double backleftDrivePower = 0;
         double backrightDrivePower = 0;
 
+        double RGB_status = 0;
+
         waitForStart();
         runtime.reset();
 
@@ -126,13 +133,11 @@ public class Mainbot_Code extends LinearOpMode {
             backleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
             backrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
 
-
             frontleftDrivePower = Range.clip(frontleftDrivePower, -1, 1);
             frontrightDrivePower = Range.clip(frontrightDrivePower, -1, 1);
 
             backleftDrivePower = Range.clip(backleftDrivePower, -1, 1);
             backrightDrivePower = Range.clip(backrightDrivePower, -1, 1);
-
 
             frontleftDrive.setPower(frontleftDrivePower);
             frontrightDrive.setPower(frontrightDrivePower);
@@ -140,7 +145,11 @@ public class Mainbot_Code extends LinearOpMode {
             backleftDrive.setPower(backleftDrivePower);
             backrightDrive.setPower(backrightDrivePower);
 
-            liftDrive.setPower(-gamepad2.right_stick_y);
+//            liftDrive.setPower(-gamepad2.right_stick_y);
+
+            /*if (gamepad1.a) RGB_status = RGB_status + 0.01;
+            else if (gamepad1.b) RGB_status = RGB_status - 0.01;
+            RGB.setPosition(RGB_status);*/
 
             /*intakeMotor.setPower(Range.clip(gamepad1.right_trigger - gamepad1.left_trigger, -1, 1));
 
