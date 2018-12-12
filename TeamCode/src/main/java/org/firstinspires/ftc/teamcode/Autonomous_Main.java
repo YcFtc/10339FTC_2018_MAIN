@@ -27,12 +27,17 @@ package org.firstinspires.ftc.teamcode;/* Copyright (c) 2017 FIRST. All rights r
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import android.graphics.Camera;
+import android.hardware.camera2.CameraAccessException;
 import android.media.AudioManager;
+import android.media.CameraProfile;
 import android.media.SoundPool;
 import android.text.method.Touch;
 
 import com.disnodeteam.dogecv.CameraViewDisplay;
+import com.disnodeteam.dogecv.CustomCameraView;
 import com.disnodeteam.dogecv.DogeCV;
+import com.disnodeteam.dogecv.detectors.roverrukus.CustomGoldAlignDetector;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
@@ -136,6 +141,9 @@ public class Autonomous_Main extends LinearOpMode {
 
         //Dogecv setup_______________________________________________________________________________________________
         detector = new GoldAlignDetector();
+
+        new CustomCameraView(hardwareMap.appContext, 1);
+
         detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
         detector.useDefaults();
 
