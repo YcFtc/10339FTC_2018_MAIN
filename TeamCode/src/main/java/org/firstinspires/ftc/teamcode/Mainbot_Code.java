@@ -60,7 +60,7 @@ public class Mainbot_Code extends LinearOpMode {
     private DcMotor backleftDrive = null;
     private DcMotor backrightDrive = null;
 
-    private DcMotor liftDrive = null;
+/*    private DcMotor liftDrive = null;
 
     private Servo RGB = null;
 
@@ -72,7 +72,7 @@ public class Mainbot_Code extends LinearOpMode {
     private DcMotor linearMotor = null;
 
     private TouchSensor linearSlideOut = null;
-    private TouchSensor linearSlideIn = null;
+    private TouchSensor linearSlideIn = null;*/
 
     double linearPower = 0;
 
@@ -104,8 +104,8 @@ public class Mainbot_Code extends LinearOpMode {
 
         backleftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backrightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-
-        liftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+/*
+        liftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);*/
 
         /*intakeMotor = hardwareMap.get(DcMotor.class, "im");
 
