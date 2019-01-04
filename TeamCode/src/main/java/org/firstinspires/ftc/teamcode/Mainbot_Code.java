@@ -1,31 +1,4 @@
-package org.firstinspires.ftc.teamcode;/* Copyright (c) 2017 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -34,20 +7,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-
-
-/**
- * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
- * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
- * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
- *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all linear OpModes contain.
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
- */
 
 @TeleOp(name="Mainbot Code", group="Linear Opmode")
 public class Mainbot_Code extends LinearOpMode {
@@ -60,19 +19,22 @@ public class Mainbot_Code extends LinearOpMode {
     private DcMotor backleftDrive = null;
     private DcMotor backrightDrive = null;
 
-/*    private DcMotor liftDrive = null;
+    private DcMotor liftDrive = null;
 
-    private Servo RGB = null;
+//    private Servo RGB = null;
 
-    private TouchSensor topLift = null;
-    private TouchSensor lowerLift = null;
-
-    private DcMotor intakeMotor = null;
+//    private TouchSensor topTouch = null;
+//    private TouchSensor lowerTouch = null;
 
     private DcMotor linearMotor = null;
 
-    private TouchSensor linearSlideOut = null;
-    private TouchSensor linearSlideIn = null;*/
+//    private TouchSensor linearSlideOut = null;
+//    private TouchSensor linearSlideIn = null;
+
+    private DcMotor linearLift = null;
+    
+    private Servo leftIntake = null;
+    private Servo rightIntake = null;
 
     double linearPower = 0;
 
@@ -86,12 +48,22 @@ public class Mainbot_Code extends LinearOpMode {
         backleftDrive = hardwareMap.get(DcMotor.class, "bl");
         backrightDrive = hardwareMap.get(DcMotor.class, "br");
 
-//        liftDrive = hardwareMap.get(DcMotor.class, "ld");
+        liftDrive = hardwareMap.get(DcMotor.class, "ld");
 
 //        RGB = hardwareMap.get(Servo.class, "rgb");
 
-/*        topLift = hardwareMap.get(TouchSensor.class, "tl");
-        lowerLift = hardwareMap.get(TouchSensor.class, "ll");*/
+//        topTouch = hardwareMap.get(TouchSensor.class, "tt");
+//        lowerTouch = hardwareMap.get(TouchSensor.class, "lt");
+
+        linearMotor = hardwareMap.get(DcMotor.class, "lm");
+
+//        linearSlideOut = hardwareMap.get(TouchSensor.class, "lso");
+//        linearSlideIn = hardwareMap.get(TouchSensor.class, "lsi");
+
+        linearLift = hardwareMap.get(DcMotor.class, "ll");
+        
+        leftIntake = hardwareMap.get(Servo.class, "li");
+        rightIntake = hardwareMap.get(Servo.class, "ri");
 
         //Gyro is "imu"
 
@@ -104,15 +76,12 @@ public class Mainbot_Code extends LinearOpMode {
 
         backleftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backrightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
-/*
-        liftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);*/
+        
+        linearLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        
+        linearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        /*intakeMotor = hardwareMap.get(DcMotor.class, "im");
-
-        linearMotor = hardwareMap.get(DcMotor.class, "lm");
-
-        linearSlideOut = hardwareMap.get(TouchSensor.class, "lso");
-        linearSlideIn = hardwareMap.get(TouchSensor.class, "lsi");*/
+        liftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         double frontleftDrivePower = 0;
         double frontrightDrivePower = 0;
@@ -120,10 +89,22 @@ public class Mainbot_Code extends LinearOpMode {
         double backleftDrivePower = 0;
         double backrightDrivePower = 0;
 
-        double RGB_status = 0;
+//        double RGB_status = 0;
 
         waitForStart();
         runtime.reset();
+
+        frontleftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        frontrightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        backleftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        backrightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+        double linearLiftMax = linearLift.getCurrentPosition() + 147;
+
+        double linearLiftPower = 0;
+
+        linearLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         while (opModeIsActive()) {
             frontleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
@@ -132,11 +113,11 @@ public class Mainbot_Code extends LinearOpMode {
             backleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
             backrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
 
-            frontleftDrivePower = Range.clip(frontleftDrivePower, -1, 1);
-            frontrightDrivePower = Range.clip(frontrightDrivePower, -1, 1);
+            frontleftDrivePower = Range.clip(Math.pow(frontleftDrivePower, 3), -1, 1);
+            frontrightDrivePower = Range.clip(Math.pow(frontrightDrivePower, 3), -1, 1);
 
-            backleftDrivePower = Range.clip(backleftDrivePower, -1, 1);
-            backrightDrivePower = Range.clip(backrightDrivePower, -1, 1);
+            backleftDrivePower = Range.clip(Math.pow(backleftDrivePower, 3), -1, 1);
+            backrightDrivePower = Range.clip(Math.pow(backrightDrivePower, 3), -1, 1);
 
             frontleftDrive.setPower(frontleftDrivePower);
             frontrightDrive.setPower(frontrightDrivePower);
@@ -144,19 +125,34 @@ public class Mainbot_Code extends LinearOpMode {
             backleftDrive.setPower(backleftDrivePower);
             backrightDrive.setPower(backrightDrivePower);
 
-//            liftDrive.setPower(-gamepad2.right_stick_y);
+            if (gamepad2.dpad_up) liftDrive.setPower(1);
+            else if (gamepad2.dpad_down) liftDrive.setPower(-1);
+            else liftDrive.setPower(0);
 
-            /*if (gamepad1.a) RGB_status = RGB_status + 0.01;
+            if (gamepad2.left_bumper) leftIntake.setPosition(0);
+            else if (gamepad2.left_trigger != 0) leftIntake.setPosition(180);
+
+            if (gamepad2.right_bumper) rightIntake.setPosition(0);
+            else if (gamepad2.right_trigger != 0) rightIntake.setPosition(180);
+
+/*
+            if (gamepad1.a) RGB_status = RGB_status + 0.01;
             else if (gamepad1.b) RGB_status = RGB_status - 0.01;
-            RGB.setPosition(RGB_status);*/
+            RGB.setPosition(RGB_status);
+*/
 
-            /*intakeMotor.setPower(Range.clip(gamepad1.right_trigger - gamepad1.left_trigger, -1, 1));
+            linearLiftPower = -gamepad2.right_stick_y;
+            
+//            if (linearLift.getCurrentPosition() <= linearLiftMax && linearLiftPower < 0) linearLiftPower = 0;
 
-            if (linearSlideIn.isPressed() && linearPower < 0);
-            else linearMotor.setPower(linearPower);
+            linearLift.setPower(linearLiftPower);
 
-            if (linearSlideOut.isPressed() && linearPower > 0);
-            else linearMotor.setPower(linearPower);*/
+            linearPower = gamepad2.left_stick_y;
+
+//            if (linearSlideIn.isPressed() && linearPower < 0) linearPower = 0;
+//            else if (linearSlideOut.isPressed() && linearPower > 0) linearPower = 0;
+            
+            linearMotor.setPower(linearPower);
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.update();
