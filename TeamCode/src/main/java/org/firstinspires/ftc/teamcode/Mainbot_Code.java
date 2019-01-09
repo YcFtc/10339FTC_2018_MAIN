@@ -4,11 +4,8 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-
-import org.opencv.core.Mat;
 
 @TeleOp(name="Mainbot Code", group="Linear Opmode")
 public class Mainbot_Code extends LinearOpMode {
@@ -31,15 +28,17 @@ public class Mainbot_Code extends LinearOpMode {
 //    private TouchSensor linearSlideOut = null;
 //    private TouchSensor linearSlideIn = null;
 
-    private DcMotor linearLift = null;
+    private DcMotor linearMotorLift = null;
+
+    private DcMotor slideMotor = null;
     
     private Servo leftIntake = null;
     private Servo rightIntake = null;
 
-    private Servo linearStop = null;
-    private Servo liftStop = null;
+    /*private Servo linearStop = null;
+    private Servo liftStop = null;*/
 
-    double linearPower = 0;
+     private double linearPower = 0;
 
     @Override
     public void runOpMode() {
@@ -61,14 +60,18 @@ public class Mainbot_Code extends LinearOpMode {
 //        linearSlideOut = hardwareMap.get(TouchSensor.class, "lso");
 //        linearSlideIn = hardwareMap.get(TouchSensor.class, "lsi");
 
-        linearLift = hardwareMap.get(DcMotor.class, "ll");
+        linearMotorLift = hardwareMap.get(DcMotor.class, "ll");
+
+        slideMotor = hardwareMap.get(DcMotor.class, "sm");
         
         leftIntake = hardwareMap.get(Servo.class, "li");
         rightIntake = hardwareMap.get(Servo.class, "ri");
 
+/*
         linearStop = hardwareMap.get(Servo.class, "linearStop");
 
         liftStop = hardwareMap.get(Servo.class, "liftStop");
+*/
 
         //Gyro is "imu"
 
@@ -76,48 +79,46 @@ public class Mainbot_Code extends LinearOpMode {
         backrightDrive.setDirection(DcMotor.Direction.REVERSE);
 
 
-        frontleftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        frontrightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        frontleftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        frontrightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        backleftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-        backrightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+        backleftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        backrightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         
-        linearLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        linearMotorLift.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         
         linearMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         double frontleftDrivePower;
         double frontrightDrivePower;
 
         double backleftDrivePower;
         double backrightDrivePower;
+/*
 
         linearStop.setPosition(0);
         liftStop.setPosition(0);
+*/
 
 //        double RGB_status = 0;
 
         waitForStart();
         runtime.reset();
 
-        frontleftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        frontrightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double linearLiftMax = linearMotorLift.getCurrentPosition() + 147;
 
-        backleftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        backrightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        double linearLiftPower;
 
-        double linearLiftMax = linearLift.getCurrentPosition() + 147;
-
-        double linearLiftPower = 0;
-
-        linearLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        linearMotorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         while (opModeIsActive()) {
-            frontleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
-            frontrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
+            frontleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
+            frontrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
 
-            backleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
-            backrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
+            backleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
+            backrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
 
             frontleftDrivePower = Range.clip(frontleftDrivePower * Math.abs(frontleftDrivePower), -1, 1);
             frontrightDrivePower = Range.clip(frontrightDrivePower * Math.abs(frontrightDrivePower), -1, 1);
@@ -133,9 +134,9 @@ public class Mainbot_Code extends LinearOpMode {
 
             linearLiftPower = -gamepad2.right_stick_y;
 
-//            if (linearLift.getCurrentPosition() <= linearLiftMax && linearLiftPower < 0) linearLiftPower = 0;
+//            if (linearMotorLift.getCurrentPosition() <= linearLiftMax && linearLiftPower < 0) linearLiftPower = 0;
 
-            linearLift.setPower(linearLiftPower);
+            linearMotorLift.setPower(linearLiftPower);
 
             linearPower = gamepad2.left_stick_y;
 
@@ -151,14 +152,15 @@ public class Mainbot_Code extends LinearOpMode {
             else if (gamepad2.right_trigger != 0) rightIntake.setPosition(1);
 
 
+/*
             if (gamepad2.dpad_up) linearStop.setPosition(1);
             else if (gamepad2.dpad_down) linearStop.setPosition(0);
 
             if (gamepad2.dpad_right) {
                 liftStop.setPosition(0.66);
-                linearLift.setPower(-1);
             }
             else if (gamepad2.dpad_left) liftStop.setPosition(0);
+*/
 
 /*
             if (gamepad1.a) RGB_status = RGB_status + 0.01;
