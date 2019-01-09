@@ -151,6 +151,10 @@ public class Mainbot_Code extends LinearOpMode {
             if (gamepad2.right_bumper) rightIntake.setPosition(0);
             else if (gamepad2.right_trigger != 0) rightIntake.setPosition(1);
 
+            if (gamepad2.dpad_up) slideMotor.setPower(1);
+            else if (gamepad2.dpad_down) slideMotor.setPower(-1);
+            else slideMotor.setPower(0);
+
 
 /*
             if (gamepad2.dpad_up) linearStop.setPosition(1);
