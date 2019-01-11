@@ -37,6 +37,7 @@ import android.text.method.Touch;
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.CustomCameraView;
 import com.disnodeteam.dogecv.DogeCV;
+import com.disnodeteam.dogecv.Dogeforia;
 import com.disnodeteam.dogecv.detectors.roverrukus.CustomGoldAlignDetector;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -53,6 +54,7 @@ import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Func;
+import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
@@ -120,6 +122,8 @@ public class Autonomous_Main extends LinearOpMode {
 
     VuforiaLocalizer vuforia;
 
+    WebcamName webcam;
+
     //Vuforia presetup end
 
     @Override
@@ -176,8 +180,11 @@ public class Autonomous_Main extends LinearOpMode {
          * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
          * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
          */
+
+        webcam = hardwareMap.get(WebcamName.class, "Webcam 1");
+
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        Dogeforia.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
@@ -312,7 +319,7 @@ public class Autonomous_Main extends LinearOpMode {
 
         new CustomCameraView(hardwareMap.appContext, 1);
 
-        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance());
+        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), 0, true);
         detector.useDefaults();
 
         // Optional Tuning
@@ -338,6 +345,11 @@ public class Autonomous_Main extends LinearOpMode {
         // Set up our telemetry dashboard
         composeTelemetry();
 
+        vuforia.setDogeCVDetector(detector);
+        vuforia.enableDogeCV();
+        vuforia.showDebug();
+        vuforia.start();
+        
         waitForStart();
         runtime.reset();
 
@@ -465,6 +477,7 @@ public class Autonomous_Main extends LinearOpMode {
 
 
 
+            vuforia.stop;
             stop();
         }
     }

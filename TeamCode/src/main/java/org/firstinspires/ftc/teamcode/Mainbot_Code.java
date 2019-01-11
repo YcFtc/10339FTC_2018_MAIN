@@ -120,11 +120,20 @@ public class Mainbot_Code extends LinearOpMode {
             backleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
             backrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
 
+
             frontleftDrivePower = Range.clip(frontleftDrivePower * Math.abs(frontleftDrivePower), -1, 1);
             frontrightDrivePower = Range.clip(frontrightDrivePower * Math.abs(frontrightDrivePower), -1, 1);
 
             backleftDrivePower = Range.clip(backleftDrivePower * Math.abs(backleftDrivePower), -1, 1);
             backrightDrivePower = Range.clip(backrightDrivePower * Math.abs(backrightDrivePower), -1, 1);
+
+            if (!gamepad1.right_bumper) {
+                frontleftDrivePower = frontleftDrivePower / 2;
+                frontrightDrivePower = frontrightDrivePower / 2;
+
+                backleftDrivePower = backleftDrivePower / 2;
+                backrightDrivePower = backrightDrivePower / 2;
+            }
 
             frontleftDrive.setPower(frontleftDrivePower);
             frontrightDrive.setPower(frontrightDrivePower);
