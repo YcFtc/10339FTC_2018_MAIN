@@ -154,11 +154,11 @@ public class Mainbot_Code extends LinearOpMode {
 
             linearMotor.setPower(linearPower);
 
-            if (gamepad2.left_bumper) leftIntake.setPosition(0);
-            else if (gamepad2.left_trigger != 0) leftIntake.setPosition(1);
+            if (gamepad2.right_bumper) leftIntake.setPosition(1);
+            else if (gamepad2.right_trigger != 0) leftIntake.setPosition(0);
 
-            if (gamepad2.right_bumper) rightIntake.setPosition(0);
-            else if (gamepad2.right_trigger != 0) rightIntake.setPosition(1);
+            if (gamepad2.left_bumper) rightIntake.setPosition(0);
+            else if (gamepad2.left_trigger != 0) rightIntake.setPosition(1);
 
             if (gamepad2.dpad_up) slideMotor.setPower(1);
             else if (gamepad2.dpad_down) slideMotor.setPower(-1);

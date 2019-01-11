@@ -27,31 +27,24 @@ package org.firstinspires.ftc.teamcode;/* Copyright (c) 2017 FIRST. All rights r
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-import android.graphics.Camera;
-import android.hardware.camera2.CameraAccessException;
 import android.media.AudioManager;
-import android.media.CameraProfile;
 import android.media.SoundPool;
-import android.text.method.Touch;
 
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.CustomCameraView;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.Dogeforia;
-import com.disnodeteam.dogecv.detectors.roverrukus.CustomGoldAlignDetector;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
+import org.firstinspires.ftc.robotcontroller.external.samples.ConceptVuforiaNavigationWebcam;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -63,22 +56,14 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-import org.firstinspires.ftc.teamcode.R;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 @Autonomous(name="Autonomous Main", group="Autonomous")
 public class Autonomous_Main extends LinearOpMode {
@@ -89,7 +74,7 @@ public class Autonomous_Main extends LinearOpMode {
     private DcMotor backleftDrive = null;
     private DcMotor backrightDrive = null;
 
-    private DcMotor liftDrive = null;
+    private DcMotor slideMotor = null;
 
     private TouchSensor topLift = null;
     private TouchSensor lowerLift = null;
@@ -120,9 +105,9 @@ public class Autonomous_Main extends LinearOpMode {
     private OpenGLMatrix lastLocation = null;
     private boolean targetVisible = false;
 
-    VuforiaLocalizer vuforia;
+    Dogeforia vuforia;
 
-    WebcamName webcam;
+    WebcamName webcamName;
 
     //Vuforia presetup end
 
@@ -136,7 +121,7 @@ public class Autonomous_Main extends LinearOpMode {
         backleftDrive = hardwareMap.get(DcMotor.class, "bl");
         backrightDrive = hardwareMap.get(DcMotor.class, "br");
 
-        liftDrive = hardwareMap.get(DcMotor.class, "ld");
+        slideMotor = hardwareMap.get(DcMotor.class, "sm");
 
 /*        topLift = hardwareMap.get(TouchSensor.class, "tl");
         lowerLift = hardwareMap.get(TouchSensor.class, "ll");*/
@@ -153,7 +138,7 @@ public class Autonomous_Main extends LinearOpMode {
         backleftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         backrightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        liftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
         //GYRO setup_________________________________________________________________________________________________
 
@@ -181,138 +166,49 @@ public class Autonomous_Main extends LinearOpMode {
          * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
          */
 
-        webcam = hardwareMap.get(WebcamName.class, "Webcam 1");
+        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
+        /*
+         * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
+         * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
+         */
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         Dogeforia.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
 
+        // OR...  Do Not Activate the Camera Monitor View, to save power
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-        parameters.vuforiaLicenseKey = VUFORIA_KEY ;
-        parameters.cameraDirection   = CAMERA_CHOICE;
+        /*
+         * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
+         * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
+         * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
+         * web site at https://developer.vuforia.com/license-manager.
+         *
+         * Vuforia license keys are always 380 characters long, and look as if they contain mostly
+         * random data. As an example, here is a example of a fragment of a valid key:
+         *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
+         * Once you've obtained a license key, copy the string from the Vuforia web site
+         * and paste it in to your code on the next line, between the double quotes.
+         */
+        parameters.vuforiaLicenseKey = "Ac+dHab/////AAABme7b8aQeA0UzrrB2riWepIYlMa6BuupJ+4i/AFh4xfuAWQTeCMBvGtwrKST+UBBl4eLykH17nHQMv2akbgoC6F1ztKdMfaUissZAfVCda73PjHVhMovxt99RRIR9EHOEvPJXQYsx7PHtI5hJEtcsdXr3JDXEGZ0bxHQG2rhptuKYb4CNX5b5YO85aY1LFrR/4MqAHEkrmX4rD0TQ2+GVm7/8VKFEEgd7WlcHJbdGz90jk5kxTB3cNbUbn2YuB8BHFYyp+sfHznarsVly7KhmHPviHBGRVpDGUFJ6Q+7/IkLzuEbFytuEKMOluiSEgmXjR/FPDcTBa40Njo/JtO1MjP5v3IBhnRfm3Ti8FGgRgQwn";
 
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-
-        // Load the data sets that for the trackable objects. These particular data
-        // sets are stored in the 'assets' part of our application.
-        VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
-        VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
-        blueRover.setName("Blue-Rover");
-        VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
-        redFootprint.setName("Red-Footprint");
-        VuforiaTrackable frontCraters = targetsRoverRuckus.get(2);
-        frontCraters.setName("Front-Craters");
-        VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
-        backSpace.setName("Back-Space");
-
-        // For convenience, gather together all the trackable objects in one easily-iterable collection */
-        List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
-        allTrackables.addAll(targetsRoverRuckus);
 
         /**
-         * In order for localization to work, we need to tell the system where each target is on the field, and
-         * where the phone resides on the robot.  These specifications are in the form of <em>transformation matrices.</em>
-         * Transformation matrices are a central, important concept in the math here involved in localization.
-         * See <a href="https://en.wikipedia.org/wiki/Transformation_matrix">Transformation Matrix</a>
-         * for detailed information. Commonly, you'll encounter transformation matrices as instances
-         * of the {@link OpenGLMatrix} class.
-         *
-         * If you are standing in the Red Alliance Station looking towards the center of the field,
-         *     - The X axis runs from your left to the right. (positive from the center to the right)
-         *     - The Y axis runs from the Red Alliance Station towards the other side of the field
-         *       where the Blue Alliance Station is. (Positive is from the center, towards the BlueAlliance station)
-         *     - The Z axis runs from the floor, upwards towards the ceiling.  (Positive is above the floor)
-         *
-         * This Rover Ruckus sample places a specific target in the middle of each perimeter wall.
-         *
-         * Before being transformed, each target image is conceptually located at the origin of the field's
-         *  coordinate system (the center of the field), facing up.
+         * We also indicate which camera on the RC we wish to use. For pedagogical purposes,
+         * we use the same logic as in {@link ConceptVuforiaNavigationWebcam}.
          */
+        parameters.cameraName = webcamName;
+        this.vuforia = (com.disnodeteam.dogecv.Dogeforia) ClassFactory.getInstance().createVuforia(parameters);
 
         /**
-         * To place the BlueRover target in the middle of the blue perimeter wall:
-         * - First we rotate it 90 around the field's X axis to flip it upright.
-         * - Then, we translate it along the Y axis to the blue perimeter wall.
+         * Load the data set containing the VuMarks for Relic Recovery. There's only one trackable
+         * in this data set: all three of the VuMarks in the game were created from this one template,
+         * but differ in their instance id information.
+         * @see VuMarkInstanceId
          */
-        OpenGLMatrix blueRoverLocationOnField = OpenGLMatrix
-                .translation(0, mmFTCFieldWidth, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
-        blueRover.setLocation(blueRoverLocationOnField);
-
-        /**
-         * To place the RedFootprint target in the middle of the red perimeter wall:
-         * - First we rotate it 90 around the field's X axis to flip it upright.
-         * - Second, we rotate it 180 around the field's Z axis so the image is flat against the red perimeter wall
-         *   and facing inwards to the center of the field.
-         * - Then, we translate it along the negative Y axis to the red perimeter wall.
-         */
-        OpenGLMatrix redFootprintLocationOnField = OpenGLMatrix
-                .translation(0, -mmFTCFieldWidth, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180));
-        redFootprint.setLocation(redFootprintLocationOnField);
-
-        /**
-         * To place the FrontCraters target in the middle of the front perimeter wall:
-         * - First we rotate it 90 around the field's X axis to flip it upright.
-         * - Second, we rotate it 90 around the field's Z axis so the image is flat against the front wall
-         *   and facing inwards to the center of the field.
-         * - Then, we translate it along the negative X axis to the front perimeter wall.
-         */
-        OpenGLMatrix frontCratersLocationOnField = OpenGLMatrix
-                .translation(-mmFTCFieldWidth, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90));
-        frontCraters.setLocation(frontCratersLocationOnField);
-
-        /**
-         * To place the BackSpace target in the middle of the back perimeter wall:
-         * - First we rotate it 90 around the field's X axis to flip it upright.
-         * - Second, we rotate it -90 around the field's Z axis so the image is flat against the back wall
-         *   and facing inwards to the center of the field.
-         * - Then, we translate it along the X axis to the back perimeter wall.
-         */
-        OpenGLMatrix backSpaceLocationOnField = OpenGLMatrix
-                .translation(mmFTCFieldWidth, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
-        backSpace.setLocation(backSpaceLocationOnField);
-
-        /**
-         * Create a transformation matrix describing where the phone is on the robot.
-         *
-         * The coordinate frame for the robot looks the same as the field.
-         * The robot's "forward" direction is facing out along X axis, with the LEFT side facing out along the Y axis.
-         * Z is UP on the robot.  This equates to a bearing angle of Zero degrees.
-         *
-         * The phone starts out lying flat, with the screen facing Up and with the physical top of the phone
-         * pointing to the LEFT side of the Robot.  It's very important when you test this code that the top of the
-         * camera is pointing to the left side of the  robot.  The rotation angles don't work if you flip the phone.
-         *
-         * If using the rear (High Res) camera:
-         * We need to rotate the camera around it's long axis to bring the rear camera forward.
-         * This requires a negative 90 degree rotation on the Y axis
-         *
-         * If using the Front (Low Res) camera
-         * We need to rotate the camera around it's long axis to bring the FRONT camera forward.
-         * This requires a Positive 90 degree rotation on the Y axis
-         *
-         * Next, translate the camera lens to where it is on the robot.
-         * In this example, it is centered (left to right), but 110 mm forward of the middle of the robot, and 200 mm above ground level.
-         */
-
-        final int CAMERA_FORWARD_DISPLACEMENT  = 110;   // eg: Camera is 110 mm in front of robot center
-        final int CAMERA_VERTICAL_DISPLACEMENT = 200;   // eg: Camera is 200 mm above ground
-        final int CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
-
-        OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
-                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
-                        CAMERA_CHOICE == FRONT ? 90 : -90, 0, 0));
-
-        /**  Let all the trackable listeners know where the phone is.  */
-        for (VuforiaTrackable trackable : allTrackables)
-        {
-            ((VuforiaTrackableDefaultListener)trackable.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
-        }
+        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
+        VuforiaTrackable relicTemplate = relicTrackables.get(0);
+        relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
 
         //Dogecv setup_______________________________________________________________________________________________
         detector = new GoldAlignDetector();
@@ -360,13 +256,18 @@ public class Autonomous_Main extends LinearOpMode {
             //--------------------------------------------------------------------------------------
 
             //Lower the robot
-            liftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
+            slideMotor.setPower(-0.1);
 
-            /*liftDrive.setPower(-0.10);
+            sleep(10000);
+
+            slideMotor.setPower(0);
+
+            /*slideMotor.setPower(-0.10);
 
             while (!topLift.isPressed()) Thread.yield();
 
-            liftDrive.setPower(0);*/
+            slideMotor.setPower(0);*/
 
             //change msPollInterval if phone is lagging too much
             imu.startAccelerationIntegration(new Position(), new Velocity(), 200);
@@ -474,10 +375,6 @@ public class Autonomous_Main extends LinearOpMode {
             imu.stopAccelerationIntegration();
             RUN_DRIVE_MANUAL(0, 0);
 
-
-
-
-            vuforia.stop;
             stop();
         }
     }
