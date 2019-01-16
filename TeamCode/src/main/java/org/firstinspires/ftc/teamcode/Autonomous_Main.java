@@ -35,6 +35,7 @@ import com.disnodeteam.dogecv.CustomCameraView;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.Dogeforia;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
+import com.disnodeteam.dogecv.filters.LeviColorFilter;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -59,16 +60,23 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
+import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
+import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
+import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
 import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
+import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 @Autonomous(name="Autonomous Main", group="Autonomous")
 public class Autonomous_Main extends LinearOpMode {
 
-    private ElapsedTime runtime = new ElapsedTime();
     private DcMotor frontleftDrive = null;
     private DcMotor frontrightDrive = null;
     private DcMotor backleftDrive = null;
@@ -79,6 +87,25 @@ public class Autonomous_Main extends LinearOpMode {
     private TouchSensor topLift = null;
     private TouchSensor lowerLift = null;
 
+    //VuforiaSetup
+// Setup variables
+    private ElapsedTime runtime = new ElapsedTime();
+    private static final float mmPerInch        = 25.4f;
+    private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
+    private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
+
+    // Select which camera you want use.  The FRONT camera is the one on the same side as the screen.
+    // Valid choices are:  BACK or FRONT
+    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
+
+    // Vuforia variables
+    private OpenGLMatrix lastLocation = null;
+    boolean targetVisible;
+    Dogeforia vuforia;
+    WebcamName webcamName;
+    List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+
+    //Detector object
     private GoldAlignDetector detector;
 
     // The IMU sensor object
@@ -92,24 +119,6 @@ public class Autonomous_Main extends LinearOpMode {
 
     private SoundPool mySound;
     private int beepID;
-
-    //Vuforia presetup start
-    private static final String VUFORIA_KEY = "Ac+dHab/////AAABme7b8aQeA0UzrrB2riWepIYlMa6BuupJ+4i/AFh4xfuAWQTeCMBvGtwrKST+UBBl4eLykH17nHQMv2akbgoC6F1ztKdMfaUissZAfVCda73PjHVhMovxt99RRIR9EHOEvPJXQYsx7PHtI5hJEtcsdXr3JDXEGZ0bxHQG2rhptuKYb4CNX5b5YO85aY1LFrR/4MqAHEkrmX4rD0TQ2+GVm7/8VKFEEgd7WlcHJbdGz90jk5kxTB3cNbUbn2YuB8BHFYyp+sfHznarsVly7KhmHPviHBGRVpDGUFJ6Q+7/IkLzuEbFytuEKMOluiSEgmXjR/FPDcTBa40Njo/JtO1MjP5v3IBhnRfm3Ti8FGgRgQwn";
-
-    private static final float mmPerInch        = 25.4f;
-    private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
-    private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
-
-    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
-
-    private OpenGLMatrix lastLocation = null;
-    private boolean targetVisible = false;
-
-    Dogeforia vuforia;
-
-    WebcamName webcamName;
-
-    //Vuforia presetup end
 
     @Override
     public void runOpMode() {
@@ -160,62 +169,94 @@ public class Autonomous_Main extends LinearOpMode {
         imu.initialize(parameters1);
 
         //Vuforia setup______________________________________________________________________________________________
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         * We can pass Vuforia the handle to a camera preview resource (on the RC phone);
-         * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
-         */
-
+        // Default webcam name
         webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
 
-        /*
-         * To start up Vuforia, tell it the view that we wish to use for camera monitor (on the RC phone);
-         * If no camera monitor is desired, use the parameterless constructor instead (commented out below).
-         */
+        // Set up parameters for Vuforia
         int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        Dogeforia.Parameters parameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
+        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
-        // OR...  Do Not Activate the Camera Monitor View, to save power
-        // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        /*
-         * IMPORTANT: You need to obtain your own license key to use Vuforia. The string below with which
-         * 'parameters.vuforiaLicenseKey' is initialized is for illustration only, and will not function.
-         * A Vuforia 'Development' license key, can be obtained free of charge from the Vuforia developer
-         * web site at https://developer.vuforia.com/license-manager.
-         *
-         * Vuforia license keys are always 380 characters long, and look as if they contain mostly
-         * random data. As an example, here is a example of a fragment of a valid key:
-         *      ... yIgIzTqZ4mWjk9wd3cZO9T1axEqzuhxoGlfOOI2dRzKS4T0hQ8kT ...
-         * Once you've obtained a license key, copy the string from the Vuforia web site
-         * and paste it in to your code on the next line, between the double quotes.
-         */
+        // Vuforia licence key
         parameters.vuforiaLicenseKey = "Ac+dHab/////AAABme7b8aQeA0UzrrB2riWepIYlMa6BuupJ+4i/AFh4xfuAWQTeCMBvGtwrKST+UBBl4eLykH17nHQMv2akbgoC6F1ztKdMfaUissZAfVCda73PjHVhMovxt99RRIR9EHOEvPJXQYsx7PHtI5hJEtcsdXr3JDXEGZ0bxHQG2rhptuKYb4CNX5b5YO85aY1LFrR/4MqAHEkrmX4rD0TQ2+GVm7/8VKFEEgd7WlcHJbdGz90jk5kxTB3cNbUbn2YuB8BHFYyp+sfHznarsVly7KhmHPviHBGRVpDGUFJ6Q+7/IkLzuEbFytuEKMOluiSEgmXjR/FPDcTBa40Njo/JtO1MjP5v3IBhnRfm3Ti8FGgRgQwn";
+        parameters.fillCameraMonitorViewParent = true;
 
-
-        /**
-         * We also indicate which camera on the RC we wish to use. For pedagogical purposes,
-         * we use the same logic as in {@link ConceptVuforiaNavigationWebcam}.
-         */
+        // Set camera name for Vuforia config
         parameters.cameraName = webcamName;
-        this.vuforia = (com.disnodeteam.dogecv.Dogeforia) ClassFactory.getInstance().createVuforia(parameters);
 
-        /**
-         * Load the data set containing the VuMarks for Relic Recovery. There's only one trackable
-         * in this data set: all three of the VuMarks in the game were created from this one template,
-         * but differ in their instance id information.
-         * @see VuMarkInstanceId
-         */
-        VuforiaTrackables relicTrackables = this.vuforia.loadTrackablesFromAsset("RelicVuMark");
-        VuforiaTrackable relicTemplate = relicTrackables.get(0);
-        relicTemplate.setName("relicVuMarkTemplate"); // can help in debugging; otherwise not necessary
+        // Create Dogeforia object
+        vuforia = new Dogeforia(parameters);
+        vuforia.enableConvertFrameToBitmap();
+
+        //Setup trackables
+        VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
+        VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
+        blueRover.setName("Blue-Rover");
+        VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
+        redFootprint.setName("Red-Footprint");
+        VuforiaTrackable frontCraters = targetsRoverRuckus.get(2);
+        frontCraters.setName("Front-Craters");
+        VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
+        backSpace.setName("Back-Space");
+
+        // For convenience, gather together all the trackable objects in one easily-iterable collection */
+        allTrackables.addAll(targetsRoverRuckus);
+
+        OpenGLMatrix blueRoverLocationOnField = OpenGLMatrix
+                .translation(0, mmFTCFieldWidth, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
+        blueRover.setLocation(blueRoverLocationOnField);
+
+        OpenGLMatrix redFootprintLocationOnField = OpenGLMatrix
+                .translation(0, -mmFTCFieldWidth, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180));
+        redFootprint.setLocation(redFootprintLocationOnField);
+
+        OpenGLMatrix frontCratersLocationOnField = OpenGLMatrix
+                .translation(-mmFTCFieldWidth, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90));
+        frontCraters.setLocation(frontCratersLocationOnField);
+
+        OpenGLMatrix backSpaceLocationOnField = OpenGLMatrix
+                .translation(mmFTCFieldWidth, 0, mmTargetHeight)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
+        backSpace.setLocation(backSpaceLocationOnField);
+
+
+        final int CAMERA_FORWARD_DISPLACEMENT  = 110;   // eg: Camera is 110 mm in front of robot center
+        final int CAMERA_VERTICAL_DISPLACEMENT = 200;   // eg: Camera is 200 mm above ground
+        final int CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
+
+        OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
+                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
+                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
+                        CAMERA_CHOICE == FRONT ? 90 : -90, 0, 0));
+
+        for (VuforiaTrackable trackable : allTrackables)
+        {
+            ((VuforiaTrackableDefaultListener)trackable.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
+        }
+
+        // Activate the targets
+        targetsRoverRuckus.activate();
+
+        // Initialize the detector
+        detector = new GoldAlignDetector();
+        detector.init(hardwareMap.appContext,CameraViewDisplay.getInstance(), 0, true);
+        detector.useDefaults();
+        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
+        //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
+        detector.downscale = 0.8;
+
+        // Set the detector
+        vuforia.setDogeCVDetector(detector);
+        vuforia.enableDogeCV();
+        vuforia.showDebug();
+        vuforia.start();
 
         //Dogecv setup_______________________________________________________________________________________________
         detector = new GoldAlignDetector();
 
-        new CustomCameraView(hardwareMap.appContext, 1);
-
-        detector.init(hardwareMap.appContext, CameraViewDisplay.getInstance(), 0, true);
+        detector.init(hardwareMap.appContext,CameraViewDisplay.getInstance(), 0, true);
         detector.useDefaults();
 
         // Optional Tuning
@@ -241,11 +282,6 @@ public class Autonomous_Main extends LinearOpMode {
         // Set up our telemetry dashboard
         composeTelemetry();
 
-        vuforia.setDogeCVDetector(detector);
-        vuforia.enableDogeCV();
-        vuforia.showDebug();
-        vuforia.start();
-        
         waitForStart();
         runtime.reset();
 
@@ -274,12 +310,12 @@ public class Autonomous_Main extends LinearOpMode {
 
             RUN_DRIVE_MANUAL(0.5, -0.5);
 
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, DEGREES);
 
             while (angles.firstAngle < -90) {
                 composeTelemetry();
                 telemetry.update();
-                angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, DEGREES);
                 sleep(100);
             }
 
@@ -315,13 +351,13 @@ public class Autonomous_Main extends LinearOpMode {
 
                 sleep(1500);
 
-            } while (detector.getAligned());
+            } while (!detector.getAligned());
 
             mySound.play(beepID, 1, 1, 1, 0, 1);
 
             //Hit Block
             double currentEncoderPosition;
-            double targetIndividualEncoderPosition = 3880.8;
+            double targetIndividualEncoderPosition = 806.4;
             double targetEncoderPosition = targetIndividualEncoderPosition * 4; //3.5 wheel turns multiplied by 0.75 for demobot and 4 for all motors
             STOP_AND_RESET_DRIVE_ENCODERS();
             do {
@@ -365,10 +401,10 @@ public class Autonomous_Main extends LinearOpMode {
 
             RUN_DRIVE_MANUAL(0.2, -0.2);
 
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, DEGREES);
 
             while (angles.firstAngle < -45) {
-                angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, DEGREES);
                 sleep(100);
             }
 
@@ -378,7 +414,6 @@ public class Autonomous_Main extends LinearOpMode {
             stop();
         }
     }
-
     private void RUN_DRIVE_MANUAL(double leftPower, double rightPower) {
         leftPower = Range.clip(leftPower, -1, 1);
         rightPower = Range.clip(rightPower, -1, 1);
@@ -458,7 +493,7 @@ public class Autonomous_Main extends LinearOpMode {
             // Acquiring the angles is relatively expensive; we don't want
             // to do that in each of the three items that need that info, as that's
             // three times the necessary expense.
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, DEGREES);
             gravity  = imu.getGravity();
         }
         });
@@ -513,10 +548,10 @@ public class Autonomous_Main extends LinearOpMode {
     //----------------------------------------------------------------------------------------------
 
     String formatAngle(AngleUnit angleUnit, double angle) {
-        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+        return formatDegrees(DEGREES.fromUnit(angleUnit, angle));
     }
 
     String formatDegrees(double degrees){
-        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+        return String.format(Locale.getDefault(), "%.1f", DEGREES.normalize(degrees));
     }
 }
