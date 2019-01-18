@@ -77,6 +77,8 @@ import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocaliz
 @Autonomous(name="Autonomous Main", group="Autonomous")
 public class Autonomous_Main extends LinearOpMode {
 
+    private ElapsedTime runtime = new ElapsedTime();
+
     private DcMotor frontleftDrive = null;
     private DcMotor frontrightDrive = null;
     private DcMotor backleftDrive = null;
@@ -87,33 +89,11 @@ public class Autonomous_Main extends LinearOpMode {
     private TouchSensor topLift = null;
     private TouchSensor lowerLift = null;
 
-    //VuforiaSetup
-// Setup variables
-    private ElapsedTime runtime = new ElapsedTime();
-    private static final float mmPerInch        = 25.4f;
-    private static final float mmFTCFieldWidth  = (12*6) * mmPerInch;       // the width of the FTC field (from the center point to the outer panels)
-    private static final float mmTargetHeight   = (6) * mmPerInch;          // the height of the center of the target image above the floor
-
-    // Select which camera you want use.  The FRONT camera is the one on the same side as the screen.
-    // Valid choices are:  BACK or FRONT
-    private static final VuforiaLocalizer.CameraDirection CAMERA_CHOICE = BACK;
-
-    // Vuforia variables
-    private OpenGLMatrix lastLocation = null;
-    boolean targetVisible;
-    Dogeforia vuforia;
-    WebcamName webcamName;
-    List<VuforiaTrackable> allTrackables = new ArrayList<VuforiaTrackable>();
+    private TouchSensor linearSlideOut = null;
+    private TouchSensor linearSlideIn = null;
 
     //Detector object
     private GoldAlignDetector detector;
-
-    // The IMU sensor object
-    BNO055IMU imu;
-
-    // State used for updating telemetry
-    Orientation angles;
-    Acceleration gravity;
 
     double dogecvCameraCenter = 210;
 
@@ -132,6 +112,9 @@ public class Autonomous_Main extends LinearOpMode {
 
         slideMotor = hardwareMap.get(DcMotor.class, "sm");
 
+        linearSlideOut = hardwareMap.get(TouchSensor.class, "lso");
+        linearSlideIn = hardwareMap.get(TouchSensor.class, "lsi");
+
 /*        topLift = hardwareMap.get(TouchSensor.class, "tl");
         lowerLift = hardwareMap.get(TouchSensor.class, "ll");*/
 
@@ -149,114 +132,10 @@ public class Autonomous_Main extends LinearOpMode {
 
         slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
-        //GYRO setup_________________________________________________________________________________________________
-
-        // Set up the parameters1 with which we will use our IMU. Note that integration
-        // algorithm here just reports accelerations to the logcat log; it doesn't actually
-        // provide positional information.
-        BNO055IMU.Parameters parameters1 = new BNO055IMU.Parameters();
-        parameters1.accelUnit           = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters1.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters1.loggingEnabled      = true;
-        parameters1.loggingTag          = "IMU";
-        parameters1.angleUnit           = BNO055IMU.AngleUnit.DEGREES;
-        parameters1.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters1);
-
-        //Vuforia setup______________________________________________________________________________________________
-        // Default webcam name
-        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-        // Set up parameters for Vuforia
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        // Vuforia licence key
-        parameters.vuforiaLicenseKey = "Ac+dHab/////AAABme7b8aQeA0UzrrB2riWepIYlMa6BuupJ+4i/AFh4xfuAWQTeCMBvGtwrKST+UBBl4eLykH17nHQMv2akbgoC6F1ztKdMfaUissZAfVCda73PjHVhMovxt99RRIR9EHOEvPJXQYsx7PHtI5hJEtcsdXr3JDXEGZ0bxHQG2rhptuKYb4CNX5b5YO85aY1LFrR/4MqAHEkrmX4rD0TQ2+GVm7/8VKFEEgd7WlcHJbdGz90jk5kxTB3cNbUbn2YuB8BHFYyp+sfHznarsVly7KhmHPviHBGRVpDGUFJ6Q+7/IkLzuEbFytuEKMOluiSEgmXjR/FPDcTBa40Njo/JtO1MjP5v3IBhnRfm3Ti8FGgRgQwn";
-        parameters.fillCameraMonitorViewParent = true;
-
-        // Set camera name for Vuforia config
-        parameters.cameraName = webcamName;
-
-        // Create Dogeforia object
-        vuforia = new Dogeforia(parameters);
-        vuforia.enableConvertFrameToBitmap();
-
-        //Setup trackables
-        VuforiaTrackables targetsRoverRuckus = this.vuforia.loadTrackablesFromAsset("RoverRuckus");
-        VuforiaTrackable blueRover = targetsRoverRuckus.get(0);
-        blueRover.setName("Blue-Rover");
-        VuforiaTrackable redFootprint = targetsRoverRuckus.get(1);
-        redFootprint.setName("Red-Footprint");
-        VuforiaTrackable frontCraters = targetsRoverRuckus.get(2);
-        frontCraters.setName("Front-Craters");
-        VuforiaTrackable backSpace = targetsRoverRuckus.get(3);
-        backSpace.setName("Back-Space");
-
-        // For convenience, gather together all the trackable objects in one easily-iterable collection */
-        allTrackables.addAll(targetsRoverRuckus);
-
-        OpenGLMatrix blueRoverLocationOnField = OpenGLMatrix
-                .translation(0, mmFTCFieldWidth, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 0));
-        blueRover.setLocation(blueRoverLocationOnField);
-
-        OpenGLMatrix redFootprintLocationOnField = OpenGLMatrix
-                .translation(0, -mmFTCFieldWidth, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, 180));
-        redFootprint.setLocation(redFootprintLocationOnField);
-
-        OpenGLMatrix frontCratersLocationOnField = OpenGLMatrix
-                .translation(-mmFTCFieldWidth, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0 , 90));
-        frontCraters.setLocation(frontCratersLocationOnField);
-
-        OpenGLMatrix backSpaceLocationOnField = OpenGLMatrix
-                .translation(mmFTCFieldWidth, 0, mmTargetHeight)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, XYZ, DEGREES, 90, 0, -90));
-        backSpace.setLocation(backSpaceLocationOnField);
-
-
-        final int CAMERA_FORWARD_DISPLACEMENT  = 110;   // eg: Camera is 110 mm in front of robot center
-        final int CAMERA_VERTICAL_DISPLACEMENT = 200;   // eg: Camera is 200 mm above ground
-        final int CAMERA_LEFT_DISPLACEMENT     = 0;     // eg: Camera is ON the robot's center line
-
-        OpenGLMatrix phoneLocationOnRobot = OpenGLMatrix
-                .translation(CAMERA_FORWARD_DISPLACEMENT, CAMERA_LEFT_DISPLACEMENT, CAMERA_VERTICAL_DISPLACEMENT)
-                .multiplied(Orientation.getRotationMatrix(EXTRINSIC, YZX, DEGREES,
-                        CAMERA_CHOICE == FRONT ? 90 : -90, 0, 0));
-
-        for (VuforiaTrackable trackable : allTrackables)
-        {
-            ((VuforiaTrackableDefaultListener)trackable.getListener()).setPhoneInformation(phoneLocationOnRobot, parameters.cameraDirection);
-        }
-
-        // Activate the targets
-        targetsRoverRuckus.activate();
-
-        // Initialize the detector
-        detector = new GoldAlignDetector();
-        detector.init(hardwareMap.appContext,CameraViewDisplay.getInstance(), 0, true);
-        detector.useDefaults();
-        detector.areaScoringMethod = DogeCV.AreaScoringMethod.MAX_AREA; // Can also be PERFECT_AREA
-        //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
-        detector.downscale = 0.8;
-
-        // Set the detector
-        vuforia.setDogeCVDetector(detector);
-        vuforia.enableDogeCV();
-        vuforia.showDebug();
-        vuforia.start();
-
         //Dogecv setup_______________________________________________________________________________________________
         detector = new GoldAlignDetector();
 
-        detector.init(hardwareMap.appContext,CameraViewDisplay.getInstance(), 0, true);
+        detector.init(hardwareMap.appContext,CameraViewDisplay.getInstance(), 1, false);
         detector.useDefaults();
 
         // Optional Tuning
@@ -278,10 +157,6 @@ public class Autonomous_Main extends LinearOpMode {
         // To play \/
         // mySound.play(beepID, 1, 1, 1, 0, 1);
 
-
-        // Set up our telemetry dashboard
-        composeTelemetry();
-
         waitForStart();
         runtime.reset();
 
@@ -291,38 +166,13 @@ public class Autonomous_Main extends LinearOpMode {
             //Getting off the lander
             //--------------------------------------------------------------------------------------
 
-            //Lower the robot
-            slideMotor.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.FLOAT);
-            slideMotor.setPower(-0.1);
+            slideMotor.setPower(-0.10);
 
-            sleep(10000);
+            while (!linearSlideIn.isPressed()) Thread.yield();
 
             slideMotor.setPower(0);
 
-            /*slideMotor.setPower(-0.10);
-
-            while (!topLift.isPressed()) Thread.yield();
-
-            slideMotor.setPower(0);*/
-
-            //change msPollInterval if phone is lagging too much
-            imu.startAccelerationIntegration(new Position(), new Velocity(), 200);
-
-            RUN_DRIVE_MANUAL(0.5, -0.5);
-
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, DEGREES);
-
-            while (angles.firstAngle < -90) {
-                composeTelemetry();
-                telemetry.update();
-                angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, DEGREES);
-                sleep(100);
-            }
-
-            imu.stopAccelerationIntegration();
             RUN_DRIVE_MANUAL(0, 0);
-
-
 
             //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //Sampling Portion
@@ -366,11 +216,11 @@ public class Autonomous_Main extends LinearOpMode {
                         backleftDrive.getCurrentPosition() +
                         backrightDrive.getCurrentPosition();
 
-                if (detector.isFound() || detector.getAligned()) RUN_DRIVE_MANUAL(0.75, 0.75);
+                if (detector.isFound()) RUN_DRIVE_STRAFE(0.75, 0.75);
                 else if (detector.getXPosition() < dogecvCameraCenter/*to the left*/)
-                    RUN_DRIVE_MANUAL(0.70, 0.75);
+                    RUN_DRIVE_STRAFE(0.70, 0.75);
                 else if (detector.getXPosition() > dogecvCameraCenter/*to the right*/)
-                    RUN_DRIVE_MANUAL(0.75, 0.70);
+                    RUN_DRIVE_STRAFE(0.75, 0.70);
 
                 if (frontleftDrive.getCurrentPosition() >= targetIndividualEncoderPosition)
                     frontleftDrive.setPower(0);
@@ -391,24 +241,6 @@ public class Autonomous_Main extends LinearOpMode {
 
             RUN_DRIVE(-0.5, 0);
 
-
-            //======================================================================================
-            //Depo Portion
-            //======================================================================================
-
-            //Turn to VuMark
-            imu.startAccelerationIntegration(new Position(), new Velocity(), 200);
-
-            RUN_DRIVE_MANUAL(0.2, -0.2);
-
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, DEGREES);
-
-            while (angles.firstAngle < -45) {
-                angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, DEGREES);
-                sleep(100);
-            }
-
-            imu.stopAccelerationIntegration();
             RUN_DRIVE_MANUAL(0, 0);
 
             stop();
@@ -444,6 +276,14 @@ public class Autonomous_Main extends LinearOpMode {
 
         backleftDrive.setPower(ForwardPower);
         backrightDrive.setPower(ForwardPower);
+    }
+
+    private void RUN_DRIVE_STRAFE(double FrontRightwardPower, double BackRightwardPower) {
+        frontleftDrive.setPower(-FrontRightwardPower);
+        frontrightDrive.setPower(FrontRightwardPower);
+
+        backleftDrive.setPower(BackRightwardPower);
+        backrightDrive.setPower(-BackRightwardPower);
     }
 
     private void STOP_AND_RESET_DRIVE_ENCODERS(){
@@ -482,76 +322,5 @@ public class Autonomous_Main extends LinearOpMode {
         while (frontleftDrive.isBusy() || frontrightDrive.isBusy() || backleftDrive.isBusy() || backrightDrive.isBusy()){
             idle();
         }
-    }
-
-    void composeTelemetry() {
-
-        // At the beginning of each telemetry update, grab a bunch of data
-        // from the IMU that we will then display in separate lines.
-        telemetry.addAction(new Runnable() { @Override public void run()
-        {
-            // Acquiring the angles is relatively expensive; we don't want
-            // to do that in each of the three items that need that info, as that's
-            // three times the necessary expense.
-            angles   = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, DEGREES);
-            gravity  = imu.getGravity();
-        }
-        });
-
-        telemetry.addLine()
-                .addData("status", new Func<String>() {
-                    @Override public String value() {
-                        return imu.getSystemStatus().toShortString();
-                    }
-                })
-                .addData("calib", new Func<String>() {
-                    @Override public String value() {
-                        return imu.getCalibrationStatus().toString();
-                    }
-                });
-
-        telemetry.addLine()
-                .addData("heading", new Func<String>() {
-                    @Override public String value() {
-                        return formatAngle(angles.angleUnit, angles.firstAngle);
-                    }
-                })
-                .addData("roll", new Func<String>() {
-                    @Override public String value() {
-                        return formatAngle(angles.angleUnit, angles.secondAngle);
-                    }
-                })
-                .addData("pitch", new Func<String>() {
-                    @Override public String value() {
-                        return formatAngle(angles.angleUnit, angles.thirdAngle);
-                    }
-                });
-
-        telemetry.addLine()
-                .addData("grvty", new Func<String>() {
-                    @Override public String value() {
-                        return gravity.toString();
-                    }
-                })
-                .addData("mag", new Func<String>() {
-                    @Override public String value() {
-                        return String.format(Locale.getDefault(), "%.3f",
-                                Math.sqrt(gravity.xAccel*gravity.xAccel
-                                        + gravity.yAccel*gravity.yAccel
-                                        + gravity.zAccel*gravity.zAccel));
-                    }
-                });
-    }
-
-    //----------------------------------------------------------------------------------------------
-    // Formatting
-    //----------------------------------------------------------------------------------------------
-
-    String formatAngle(AngleUnit angleUnit, double angle) {
-        return formatDegrees(DEGREES.fromUnit(angleUnit, angle));
-    }
-
-    String formatDegrees(double degrees){
-        return String.format(Locale.getDefault(), "%.1f", DEGREES.normalize(degrees));
     }
 }
