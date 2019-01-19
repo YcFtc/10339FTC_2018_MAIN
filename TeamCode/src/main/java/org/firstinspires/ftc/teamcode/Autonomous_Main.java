@@ -27,13 +27,13 @@ package org.firstinspires.ftc.teamcode;/* Copyright (c) 2017 FIRST. All rights r
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.SoundPool;
 
 import com.disnodeteam.dogecv.CameraViewDisplay;
 import com.disnodeteam.dogecv.CustomCameraView;
 import com.disnodeteam.dogecv.DogeCV;
-import com.disnodeteam.dogecv.Dogeforia;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
 import com.disnodeteam.dogecv.filters.LeviColorFilter;
 import com.qualcomm.hardware.bosch.BNO055IMU;
@@ -45,34 +45,9 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
-import org.firstinspires.ftc.robotcontroller.external.samples.ConceptVuforiaNavigationWebcam;
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-import org.firstinspires.ftc.robotcore.external.navigation.VuMarkInstanceId;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackable;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefaultListener;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-
-import static org.firstinspires.ftc.robotcore.external.navigation.AngleUnit.DEGREES;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.XYZ;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesOrder.YZX;
-import static org.firstinspires.ftc.robotcore.external.navigation.AxesReference.EXTRINSIC;
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.BACK;
-import static org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer.CameraDirection.FRONT;
 
 @Autonomous(name="Autonomous Main", group="Autonomous")
 public class Autonomous_Main extends LinearOpMode {
@@ -81,6 +56,7 @@ public class Autonomous_Main extends LinearOpMode {
 
     private DcMotor frontleftDrive = null;
     private DcMotor frontrightDrive = null;
+
     private DcMotor backleftDrive = null;
     private DcMotor backrightDrive = null;
 
@@ -107,6 +83,7 @@ public class Autonomous_Main extends LinearOpMode {
 
         frontleftDrive = hardwareMap.get(DcMotor.class, "fl");
         frontrightDrive = hardwareMap.get(DcMotor.class, "fr");
+
         backleftDrive = hardwareMap.get(DcMotor.class, "bl");
         backrightDrive = hardwareMap.get(DcMotor.class, "br");
 
@@ -123,7 +100,6 @@ public class Autonomous_Main extends LinearOpMode {
         frontrightDrive.setDirection(DcMotor.Direction.REVERSE);
         backrightDrive.setDirection(DcMotor.Direction.REVERSE);
 
-
         frontleftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
         frontrightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
 
@@ -135,7 +111,7 @@ public class Autonomous_Main extends LinearOpMode {
         //Dogecv setup_______________________________________________________________________________________________
         detector = new GoldAlignDetector();
 
-        detector.init(hardwareMap.appContext,CameraViewDisplay.getInstance(), 1, false);
+        detector.init(hardwareMap.appContext,CameraViewDisplay.getInstance(), 0, false);
         detector.useDefaults();
 
         // Optional Tuning
@@ -147,7 +123,7 @@ public class Autonomous_Main extends LinearOpMode {
         //detector.perfectAreaScorer.perfectArea = 10000; // if using PERFECT_AREA scoring
         detector.maxAreaScorer.weight = 0.005;
 
-        detector.ratioScorer.weight = 5;
+        detector.ratioScorer.weight = 5;//was 5
         detector.ratioScorer.perfectRatio = 1.0;
 
         detector.enable();
@@ -166,49 +142,102 @@ public class Autonomous_Main extends LinearOpMode {
             //Getting off the lander
             //--------------------------------------------------------------------------------------
 
-            slideMotor.setPower(-0.10);
+            //5.5 motor turns until lift extended
+            //Neverest 40 has 1120 encoder ticks per output shaft revolution
 
-            while (!linearSlideIn.isPressed()) Thread.yield();
+            slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            slideMotor.setPower(0);
+            slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            RUN_DRIVE_MANUAL(0, 0);
+            //1120 * 5.5 wheel turns
+            slideMotor.setTargetPosition(6160);
+
+            slideMotor.setPower(0.8);
+
+            sleep(5000);
+
+            RUN_DRIVE(-0.1, 0);
+
+            sleep(100);
+
+            RUN_DRIVE(0, 0);
+
+            sleep(1000);
+
+/*
+            RUN_DRIVE_STRAFE(0.25, 0.25);
+
+            sleep(100);
+
+            RUN_DRIVE_STRAFE(0, 0);
+*/
+
+            sleep(1000);
 
             //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //Sampling Portion
             //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-            STOP_AND_RESET_DRIVE_ENCODERS();
+            frontleftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            frontrightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            backleftDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+            backrightDrive.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+
+            telemetry.addData("Waiting to turn", detector.isFound());
+            telemetry.update();
+
+            while (!detector.isFound()) Thread.yield();
 
             //Aligning with Gold
             do {
-                if (detector.getXPosition() < dogecvCameraCenter + 10) {
+                if (detector.getXPosition() < dogecvCameraCenter) {
                     telemetry.addData("Is Left", detector.getXPosition());
                     telemetry.update();
 
-                    RUN_DRIVE_MANUAL(-0.15, 0.15);
+                    RUN_DRIVE_MANUAL(-0.2, 0.2);
 
-                    while (detector.getXPosition() < dogecvCameraCenter + 10) Thread.yield();
-                } else if (detector.getXPosition() > dogecvCameraCenter - 10) {
+//                    while (detector.getXPosition() < dogecvCameraCenter + 10) Thread.yield();
+                } else if (detector.getXPosition() > dogecvCameraCenter) {
                     telemetry.addData("Is Right", detector.getXPosition());
                     telemetry.update();
 
-                    RUN_DRIVE_MANUAL(0.15, -0.15);
+                    RUN_DRIVE_MANUAL(0.2, -0.2);
 
-                    while (detector.getXPosition() > dogecvCameraCenter - 10) Thread.yield();
+//                    while (detector.getXPosition() > dogecvCameraCenter - 10) Thread.yield();
                 }
+
+                sleep(100);
                 RUN_DRIVE_MANUAL(0, 0);
+                telemetry.addData("Getting Aligned", detector.getAligned());
+                telemetry.update();
+                sleep(3000);
 
-                sleep(1500);
+                if (detector.getAligned()) break;
 
-            } while (!detector.getAligned());
+                telemetry.addData("Not Aligned", detector.getAligned());
+                telemetry.update();
+
+                sleep(3000);
+
+            } while (true);
+
+            RUN_DRIVE(0, 0);
 
             mySound.play(beepID, 1, 1, 1, 0, 1);
 
+            telemetry.addData(" Waiting to Hit Block", detector.getAligned());
+            telemetry.update();
+
+            sleep(1000);
+
+            telemetry.addData("Hitting Block", detector.getAligned());
+            telemetry.update();
+
             //Hit Block
             double currentEncoderPosition;
-            double targetIndividualEncoderPosition = 806.4;
-            double targetEncoderPosition = targetIndividualEncoderPosition * 4; //3.5 wheel turns multiplied by 0.75 for demobot and 4 for all motors
+            double targetIndividualEncoderPosition = 537 * 3; //537 Encoder ticks per turn multiplied by 3 turns
+            double targetEncoderPosition = targetIndividualEncoderPosition * 4; //3.5 wheel turns multiplied by 4 for all motors
             STOP_AND_RESET_DRIVE_ENCODERS();
             do {
                 currentEncoderPosition = frontleftDrive.getCurrentPosition() +
@@ -216,11 +245,12 @@ public class Autonomous_Main extends LinearOpMode {
                         backleftDrive.getCurrentPosition() +
                         backrightDrive.getCurrentPosition();
 
-                if (detector.isFound()) RUN_DRIVE_STRAFE(0.75, 0.75);
+                //powers were 0.75 or 0.70
+                if (detector.isFound()) RUN_DRIVE_STRAFE(0.3, 0.3);
                 else if (detector.getXPosition() < dogecvCameraCenter/*to the left*/)
-                    RUN_DRIVE_STRAFE(0.70, 0.75);
+                    RUN_DRIVE_STRAFE(0.2, 0.3);
                 else if (detector.getXPosition() > dogecvCameraCenter/*to the right*/)
-                    RUN_DRIVE_STRAFE(0.75, 0.70);
+                    RUN_DRIVE_STRAFE(0.3, 0.2);
 
                 if (frontleftDrive.getCurrentPosition() >= targetIndividualEncoderPosition)
                     frontleftDrive.setPower(0);
@@ -233,6 +263,10 @@ public class Autonomous_Main extends LinearOpMode {
                     backrightDrive.setPower(0);
 
             } while (!(currentEncoderPosition >= targetEncoderPosition));
+
+            telemetry.addData("Hitted", "yes");
+            telemetry.update();
+
             RUN_DRIVE(0, 0);
 
             detector.disable();
@@ -243,6 +277,9 @@ public class Autonomous_Main extends LinearOpMode {
 
             RUN_DRIVE_MANUAL(0, 0);
 
+            telemetry.addData("Done", "Done");
+            telemetry.update();
+
             stop();
         }
     }
@@ -250,8 +287,10 @@ public class Autonomous_Main extends LinearOpMode {
         leftPower = Range.clip(leftPower, -1, 1);
         rightPower = Range.clip(rightPower, -1, 1);
 
+
         frontleftDrive.setPower(leftPower);
         frontrightDrive.setPower(rightPower);
+
         backleftDrive.setPower(leftPower);
         backrightDrive.setPower(rightPower);
     }
@@ -259,10 +298,10 @@ public class Autonomous_Main extends LinearOpMode {
     private void RUN_DRIVE(double ForwardPower, double ForwardWheelTurns){
 
         if (ForwardWheelTurns != 0){
-//            int ticks_to_turn = (int) Math.rint(ForwardWheelTurns * 1478.4);/*Rounding WheelTurns * 1478.4 to the closest integer value and then casting/converting it to an int*/
+//            int ticks_to_turn = (int) Math.rint(ForwardWheelTurns * 537);/*Rounding WheelTurns * 537 to the closest integer value and then casting/converting it to an int*/
 
-//           TEMP FOR DEMOBOT
-            int ticks_to_turn = (int) Math.rint((ForwardWheelTurns * 1478.4) * 0.75);
+
+            int ticks_to_turn = (int) Math.rint(ForwardWheelTurns * 537);
 
             frontleftDrive.setTargetPosition(ticks_to_turn);
             frontrightDrive.setTargetPosition(ticks_to_turn);
