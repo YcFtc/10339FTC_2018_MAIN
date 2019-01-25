@@ -1,53 +1,17 @@
-package org.firstinspires.ftc.teamcode;/* Copyright (c) 2017 FIRST. All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted (subject to the limitations in the disclaimer below) provided that
- * the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this list
- * of conditions and the following disclaimer.
- *
- * Redistributions in binary form must reproduce the above copyright notice, this
- * list of conditions and the following disclaimer in the documentation and/or
- * other materials provided with the distribution.
- *
- * Neither the name of FIRST nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written permission.
- *
- * NO EXPRESS OR IMPLIED LICENSES TO ANY PARTY'S PATENT RIGHTS ARE GRANTED BY THIS
- * LICENSE. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
- * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
- * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+package org.firstinspires.ftc.teamcode;
 
-import android.content.res.Resources;
 import android.media.AudioManager;
 import android.media.SoundPool;
 
 import com.disnodeteam.dogecv.CameraViewDisplay;
-import com.disnodeteam.dogecv.CustomCameraView;
 import com.disnodeteam.dogecv.DogeCV;
 import com.disnodeteam.dogecv.detectors.roverrukus.GoldAlignDetector;
-import com.disnodeteam.dogecv.filters.LeviColorFilter;
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
 
 @Autonomous(name="Autonomous Main", group="Autonomous")
 public class Autonomous_Main extends LinearOpMode {
@@ -152,27 +116,34 @@ public class Autonomous_Main extends LinearOpMode {
             //1120 * 5.5 wheel turns
             slideMotor.setTargetPosition(6160);
 
-            slideMotor.setPower(0.8);
+            slideMotor.setPower(1);
 
-            sleep(5000);
+            sleep(3500);
 
-            RUN_DRIVE(-0.1, 0);
+            frontleftDrive.setPower(-0.3);
+            frontrightDrive.setPower(-0.3);
 
-            sleep(100);
+            backleftDrive.setPower(-0.3);
+            backrightDrive.setPower(-0.3);
 
-            RUN_DRIVE(0, 0);
+            sleep(300);
 
-            sleep(1000);
+            frontleftDrive.setPower(0);
+            frontrightDrive.setPower(0);
 
-/*
-            RUN_DRIVE_STRAFE(0.25, 0.25);
+            backleftDrive.setPower(0);
+            backrightDrive.setPower(0);
 
-            sleep(100);
 
-            RUN_DRIVE_STRAFE(0, 0);
-*/
+            slideMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
 
-            sleep(1000);
+            slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            slideMotor.setPower(-1);
+
+            while (!linearSlideIn.isPressed()) Thread.yield();
+
+            slideMotor.setPower(0);
 
             //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //Sampling Portion
@@ -191,34 +162,29 @@ public class Autonomous_Main extends LinearOpMode {
 
             //Aligning with Gold
             do {
-                if (detector.getXPosition() < dogecvCameraCenter) {
+                if (detector.getXPosition() > dogecvCameraCenter) {
                     telemetry.addData("Is Left", detector.getXPosition());
                     telemetry.update();
 
-                    RUN_DRIVE_MANUAL(-0.2, 0.2);
+                    RUN_DRIVE_MANUAL(-0.15, 0.15);
 
-//                    while (detector.getXPosition() < dogecvCameraCenter + 10) Thread.yield();
-                } else if (detector.getXPosition() > dogecvCameraCenter) {
+                } else if (detector.getXPosition() < dogecvCameraCenter) {
                     telemetry.addData("Is Right", detector.getXPosition());
                     telemetry.update();
 
-                    RUN_DRIVE_MANUAL(0.2, -0.2);
-
-//                    while (detector.getXPosition() > dogecvCameraCenter - 10) Thread.yield();
+                    RUN_DRIVE_MANUAL(0.15, -0.15);
                 }
 
-                sleep(100);
-                RUN_DRIVE_MANUAL(0, 0);
+/*                sleep(100);
+                RUN_DRIVE_MANUAL(0, 0);*/
                 telemetry.addData("Getting Aligned", detector.getAligned());
                 telemetry.update();
-                sleep(3000);
+//                sleep(300);
 
                 if (detector.getAligned()) break;
 
                 telemetry.addData("Not Aligned", detector.getAligned());
                 telemetry.update();
-
-                sleep(3000);
 
             } while (true);
 
@@ -234,23 +200,34 @@ public class Autonomous_Main extends LinearOpMode {
             telemetry.addData("Hitting Block", detector.getAligned());
             telemetry.update();
 
-            //Hit Block
-            double currentEncoderPosition;
-            double targetIndividualEncoderPosition = 537 * 3; //537 Encoder ticks per turn multiplied by 3 turns
-            double targetEncoderPosition = targetIndividualEncoderPosition * 4; //3.5 wheel turns multiplied by 4 for all motors
+
             STOP_AND_RESET_DRIVE_ENCODERS();
-            do {
+
+            frontleftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            frontrightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+            backleftDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            backrightDrive.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+
+
+            //Hit Block
+            int currentEncoderPosition;
+            int targetIndividualEncoderPosition = 537 * 3; //537 Encoder ticks per turn multiplied by 3 turns
+            int targetEncoderPosition = targetIndividualEncoderPosition * 4; //3.5 wheel turns multiplied by 4 for all motors
+
+            /*do {
+                //powers were 0.75 or 0.70
+                if (detector.isFound()) RUN_DRIVE_STRAFE(-0.1, -0.1);
+                else if (detector.getXPosition() > dogecvCameraCenter*//*to the left*//*)
+                    RUN_DRIVE_STRAFE(-0.05, -0.1);
+                else if (detector.getXPosition() < dogecvCameraCenter*//*to the right*//*)
+                    RUN_DRIVE_STRAFE(-0.1, -0.05);
+
+
                 currentEncoderPosition = frontleftDrive.getCurrentPosition() +
                         frontrightDrive.getCurrentPosition() +
                         backleftDrive.getCurrentPosition() +
                         backrightDrive.getCurrentPosition();
-
-                //powers were 0.75 or 0.70
-                if (detector.isFound()) RUN_DRIVE_STRAFE(0.3, 0.3);
-                else if (detector.getXPosition() < dogecvCameraCenter/*to the left*/)
-                    RUN_DRIVE_STRAFE(0.2, 0.3);
-                else if (detector.getXPosition() > dogecvCameraCenter/*to the right*/)
-                    RUN_DRIVE_STRAFE(0.3, 0.2);
 
                 if (frontleftDrive.getCurrentPosition() >= targetIndividualEncoderPosition)
                     frontleftDrive.setPower(0);
@@ -262,20 +239,26 @@ public class Autonomous_Main extends LinearOpMode {
                 if (backrightDrive.getCurrentPosition() >= targetIndividualEncoderPosition)
                     backrightDrive.setPower(0);
 
-            } while (!(currentEncoderPosition >= targetEncoderPosition));
+            } while (!(currentEncoderPosition >= targetEncoderPosition));*/
 
-            telemetry.addData("Hitted", "yes");
-            telemetry.update();
+            RUN_DRIVE_STRAFE(-0.1, -0.1);
+
+            sleep(3500);
 
             RUN_DRIVE(0, 0);
 
             detector.disable();
 
+            telemetry.addData("Hitted", "yes");
+            telemetry.update();
+
+/*
             RUN_TO_POSITION();
 
             RUN_DRIVE(-0.5, 0);
 
             RUN_DRIVE_MANUAL(0, 0);
+*/
 
             telemetry.addData("Done", "Done");
             telemetry.update();
@@ -295,13 +278,13 @@ public class Autonomous_Main extends LinearOpMode {
         backrightDrive.setPower(rightPower);
     }
 
-    private void RUN_DRIVE(double ForwardPower, double ForwardWheelTurns){
+    private void RUN_DRIVE(double ForwardPower, int ForwardWheelTurns){
 
         if (ForwardWheelTurns != 0){
 //            int ticks_to_turn = (int) Math.rint(ForwardWheelTurns * 537);/*Rounding WheelTurns * 537 to the closest integer value and then casting/converting it to an int*/
 
 
-            int ticks_to_turn = (int) Math.rint(ForwardWheelTurns * 537);
+            int ticks_to_turn = ForwardWheelTurns * 537;
 
             frontleftDrive.setTargetPosition(ticks_to_turn);
             frontrightDrive.setTargetPosition(ticks_to_turn);

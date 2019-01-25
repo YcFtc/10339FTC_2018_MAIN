@@ -119,11 +119,11 @@ public class Mainbot_Code extends LinearOpMode {
         while (opModeIsActive()) {
             turbo = gamepad1.start;
 
-            frontleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
-            frontrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
+            frontleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
+            frontrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
 
-            backleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
-            backrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
+            backleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ -gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
+            backrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
 
 
             frontleftDrivePower = Range.clip(frontleftDrivePower * Math.abs(frontleftDrivePower), -1, 1);
@@ -156,8 +156,8 @@ public class Mainbot_Code extends LinearOpMode {
                 else linearMotorLift.setPower(0);
             }
 
-            if (gamepad1.dpad_right) linearMotor.setPower(1);
-            else if (gamepad1.dpad_left) linearMotor.setPower(-1);
+            if (gamepad1.y) linearMotor.setPower(1);
+            else if (gamepad1.a) linearMotor.setPower(-1);
             else linearMotor.setPower(0);
 
             if (gamepad1.left_bumper) leftIntake.setPosition(0);
@@ -166,8 +166,8 @@ public class Mainbot_Code extends LinearOpMode {
             if (gamepad1.right_bumper) rightIntake.setPosition(1);
             else if (gamepad1.right_trigger != 0) rightIntake.setPosition(0);
 
-            if (gamepad1.y && !linearSlideOut.isPressed()) slideMotor.setPower(1);
-            else if (gamepad1.a && !linearSlideIn.isPressed()) slideMotor.setPower(-1);
+            if (gamepad1.x && !linearSlideOut.isPressed()) slideMotor.setPower(1);
+            else if (gamepad1.b && !linearSlideIn.isPressed()) slideMotor.setPower(-1);
             else slideMotor.setPower(0);
 
 /*

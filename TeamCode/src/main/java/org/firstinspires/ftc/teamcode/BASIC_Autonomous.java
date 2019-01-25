@@ -94,7 +94,7 @@ public class BASIC_Autonomous extends LinearOpMode {
 
             slideMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-            slideMotor.setPower(1);
+            slideMotor.setPower(-1);
 
             while (!linearSlideIn.isPressed()) Thread.yield();
 
