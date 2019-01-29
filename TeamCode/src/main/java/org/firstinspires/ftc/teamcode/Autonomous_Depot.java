@@ -11,6 +11,7 @@ import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -38,6 +39,8 @@ public class Autonomous_Depot extends LinearOpMode {
     private DcMotor backrightDrive = null;
 
     private DcMotor slideMotor = null;
+
+    private Servo knocker = null;
 
     private TouchSensor topLift = null;
     private TouchSensor lowerLift = null;
@@ -72,6 +75,8 @@ public class Autonomous_Depot extends LinearOpMode {
         backrightDrive = hardwareMap.get(DcMotor.class, "br");
 
         slideMotor = hardwareMap.get(DcMotor.class, "sm");
+
+        knocker = hardwareMap.get(Servo.class, "k");
 
         linearSlideOut = hardwareMap.get(TouchSensor.class, "lso");
         linearSlideIn = hardwareMap.get(TouchSensor.class, "lsi");
@@ -315,11 +320,60 @@ public class Autonomous_Depot extends LinearOpMode {
             composeTelemetry();
 
             //Angles order is ZYX
-            telemetry.update();
+            //IMU left is bigger
+
+            while (true){
+                telemetry.update();
+
+                if (angles.firstAngle < -10) RUN_DRIVE_MANUAL(0.1, -0.1);
+                else if (angles.firstAngle > 10) RUN_DRIVE_MANUAL(-0.1, 0.1);
+                else {
+                    RUN_DRIVE_MANUAL(0, 0);
+
+                    sleep(200);
+
+                    break;
+                }
+            }
+
+            int encoderStart = frontleftDrive.getCurrentPosition();
+
+            while (true) {
+                telemetry.update();
+
+                if (angles.firstAngle < -5) RUN_DRIVE_MANUAL(0.3, 0.25);
+                else if (angles.firstAngle > 5) RUN_DRIVE_MANUAL(0.25, 0.3);
+                else RUN_DRIVE_MANUAL(0.3, 0.3);
+
+                if ((frontleftDrive.getCurrentPosition() - encoderStart) <= (537/*encoder value*/ * 2)){
+                    RUN_DRIVE_MANUAL(0, 0);
+
+                    sleep(200);
+
+                    break;
+                }
+            }
+
+            knocker.setPosition(1);
+
+            sleep(1000);
+
+            knocker.setPosition(0);
+
+/*            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        this.sleep(3000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
 
+                    // your code here
 
-
+                }
+            }.start();*/
 
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
