@@ -116,6 +116,10 @@ public class Mainbot_Code extends LinearOpMode {
 
         linearMotorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        leftIntake.setPosition(1);
+
+        rightIntake.setPosition(0);
+
         while (opModeIsActive()) {
             turbo = gamepad1.start;
 

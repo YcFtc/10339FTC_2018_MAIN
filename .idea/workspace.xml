@@ -9,30 +9,21 @@
     <list default="true" id="eed3fef3-ef79-4c23-a4ea-9ea94e3ce307" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.gradle/4.4/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.4/fileHashes/fileHashes.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.4/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.4/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.4/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.4/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.4/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.4/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.4/javaCompile/jarAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.4/javaCompile/jarAnalysis.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.4/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.4/javaCompile/javaCompile.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.4/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.4/javaCompile/taskHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/4.4/javaCompile/taskJars.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.4/javaCompile/taskJars.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.4/taskHistory/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.4/taskHistory/taskHistory.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/4.4/taskHistory/taskHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/4.4/taskHistory/taskHistory.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FtcRobotController/build/intermediates/classes/debug/org/firstinspires/ftc/robotcontroller/external/samples/SensorBNO055IMU.class" beforeDir="false" afterPath="$PROJECT_DIR$/FtcRobotController/build/intermediates/classes/debug/org/firstinspires/ftc/robotcontroller/external/samples/SensorBNO055IMU.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FtcRobotController/build/intermediates/classes/debug/org/firstinspires/ftc/robotcontroller/external/samples/SensorBNO055IMUCalibration.class" beforeDir="false" afterPath="$PROJECT_DIR$/FtcRobotController/build/intermediates/classes/debug/org/firstinspires/ftc/robotcontroller/external/samples/SensorBNO055IMUCalibration.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/FtcRobotController/build/intermediates/intermediate-jars/debug/classes.jar" beforeDir="false" afterPath="$PROJECT_DIR$/FtcRobotController/build/intermediates/intermediate-jars/debug/classes.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TeamCode/build/intermediates/classes/debug/org/firstinspires/ftc/teamcode/Autonomous_Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/build/intermediates/classes/debug/org/firstinspires/ftc/teamcode/Autonomous_Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TeamCode/build/intermediates/classes/debug/org/firstinspires/ftc/teamcode/Mainbot_Code.class" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/build/intermediates/classes/debug/org/firstinspires/ftc/teamcode/Mainbot_Code.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TeamCode/build/intermediates/incremental/packageDebug/tmp/debug/dex-renamer-state.txt" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/build/intermediates/incremental/packageDebug/tmp/debug/dex-renamer-state.txt" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexBuilder/debug/39.jar" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexBuilder/debug/39.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexBuilder/debug/40.jar" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexBuilder/debug/40.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexBuilder/debug/41.jar" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexBuilder/debug/41.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexBuilder/debug/48/org/firstinspires/ftc/teamcode/Autonomous_Main.dex" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexBuilder/debug/48/org/firstinspires/ftc/teamcode/Autonomous_Main.dex" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexBuilder/debug/48/org/firstinspires/ftc/teamcode/Mainbot_Code.dex" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexBuilder/debug/48/org/firstinspires/ftc/teamcode/Mainbot_Code.dex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexBuilder/debug/__content__.json" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexBuilder/debug/__content__.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexMerger/debug/0/classes.dex" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexMerger/debug/0/classes.dex" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexMerger/debug/__content__.json" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/build/intermediates/transforms/dexMerger/debug/__content__.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/TeamCode/build/outputs/apk/debug/TeamCode-debug.apk" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/build/outputs/apk/debug/TeamCode-debug.apk" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Depot.java" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Depot.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Mainbot_Code.java" beforeDir="false" afterPath="$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Mainbot_Code.java" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -55,15 +46,6 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="Autonomous_Main_OLD.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Main_OLD.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="901">
-              <caret line="90" column="25" selection-start-line="85" selection-start-column="4" selection-end-line="90" selection-end-column="25" />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="Autonomous_Main.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Main.java">
           <provider selected="true" editor-type-id="text-editor">
@@ -79,26 +61,26 @@
       <file leaf-file-name="Autonomous_Depot.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Depot.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="133">
-              <caret line="363" column="2" selection-start-line="363" selection-start-column="2" selection-end-line="363" selection-end-column="2" />
+            <state relative-caret-position="303">
+              <caret line="330" column="43" lean-forward="true" selection-start-line="330" selection-start-column="43" selection-end-line="330" selection-end-column="43" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#15867#16300#0" expanded="true" />
-                <element signature="e#16299#16300#0" expanded="true" />
-                <element signature="e#16367#16551#0" expanded="true" />
-                <element signature="e#16550#16551#0" expanded="true" />
-                <element signature="e#16587#16771#0" expanded="true" />
-                <element signature="e#16770#16771#0" expanded="true" />
-                <element signature="e#16839#17034#0" expanded="true" />
-                <element signature="e#17033#17034#0" expanded="true" />
-                <element signature="e#17069#17265#0" expanded="true" />
-                <element signature="e#17264#17265#0" expanded="true" />
-                <element signature="e#17301#17496#0" expanded="true" />
-                <element signature="e#17495#17496#0" expanded="true" />
-                <element signature="e#17562#17727#0" expanded="true" />
-                <element signature="e#17726#17727#0" expanded="true" />
-                <element signature="e#17761#18168#0" expanded="true" />
-                <element signature="e#18167#18168#0" expanded="true" />
+                <element signature="e#17209#17642#0" expanded="true" />
+                <element signature="e#17641#17642#0" expanded="true" />
+                <element signature="e#17709#17893#0" expanded="true" />
+                <element signature="e#17892#17893#0" expanded="true" />
+                <element signature="e#17929#18113#0" expanded="true" />
+                <element signature="e#18112#18113#0" expanded="true" />
+                <element signature="e#18181#18376#0" expanded="true" />
+                <element signature="e#18375#18376#0" expanded="true" />
+                <element signature="e#18411#18607#0" expanded="true" />
+                <element signature="e#18606#18607#0" expanded="true" />
+                <element signature="e#18643#18838#0" expanded="true" />
+                <element signature="e#18837#18838#0" expanded="true" />
+                <element signature="e#18904#19069#0" expanded="true" />
+                <element signature="e#19068#19069#0" expanded="true" />
+                <element signature="e#19103#19510#0" expanded="true" />
+                <element signature="e#19509#19510#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -107,17 +89,8 @@
       <file leaf-file-name="SensorBNO055IMU.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/SensorBNO055IMU.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-68">
-              <caret line="68" column="23" lean-forward="true" selection-start-line="68" selection-start-column="23" selection-end-line="68" selection-end-column="23" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="SensorBNO055IMUCalibration.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/SensorBNO055IMUCalibration.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1020">
-              <caret line="102" column="8" selection-start-line="102" selection-start-column="8" selection-end-line="102" selection-end-column="8" />
+            <state relative-caret-position="442">
+              <caret line="68" column="23" selection-start-line="68" selection-start-column="23" selection-end-line="68" selection-end-column="23" />
             </state>
           </provider>
         </entry>
@@ -138,8 +111,8 @@
       <file leaf-file-name="Mainbot_Code.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Mainbot_Code.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2482">
-              <caret line="152" column="20" selection-start-line="152" selection-start-column="20" selection-end-line="152" selection-end-column="20" />
+            <state relative-caret-position="204">
+              <caret line="118" column="34" selection-start-line="118" selection-start-column="34" selection-end-line="118" selection-end-column="34" />
             </state>
           </provider>
         </entry>
@@ -4862,12 +4835,12 @@
         <option value="$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Main_2.java" />
         <option value="$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Limittest.java" />
         <option value="$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BASIC_Autonomous.java" />
-        <option value="$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Mainbot_Code.java" />
         <option value="$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Main.java" />
         <option value="$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Depo.java" />
         <option value="$PROJECT_DIR$/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/SensorBNO055IMU.java" />
         <option value="$PROJECT_DIR$/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/SensorBNO055IMUCalibration.java" />
         <option value="$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Depot.java" />
+        <option value="$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Mainbot_Code.java" />
       </list>
     </option>
   </component>
@@ -4893,32 +4866,11 @@
           <select />
         </subPane>
       </pane>
+      <pane id="PackagesPane" />
       <pane id="Scope" />
       <pane id="AndroidView">
         <subPane>
           <expand>
-            <path>
-              <item name="10339FTC_2018_MAIN" type="1abcf292:AndroidViewProjectNode" />
-              <item name="FtcRobotController" type="feadf853:AndroidModuleNode" />
-            </path>
-            <path>
-              <item name="10339FTC_2018_MAIN" type="1abcf292:AndroidViewProjectNode" />
-              <item name="FtcRobotController" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-            </path>
-            <path>
-              <item name="10339FTC_2018_MAIN" type="1abcf292:AndroidViewProjectNode" />
-              <item name="FtcRobotController" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="robotcontroller" type="cbb59c9e:AndroidPsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="10339FTC_2018_MAIN" type="1abcf292:AndroidViewProjectNode" />
-              <item name="FtcRobotController" type="feadf853:AndroidModuleNode" />
-              <item name="java" type="edd41e36:AndroidSourceTypeNode" />
-              <item name="robotcontroller" type="cbb59c9e:AndroidPsiDirectoryNode" />
-              <item name="samples" type="462c0819:PsiDirectoryNode" />
-            </path>
             <path>
               <item name="10339FTC_2018_MAIN" type="1abcf292:AndroidViewProjectNode" />
               <item name="TeamCode" type="feadf853:AndroidModuleNode" />
@@ -4938,7 +4890,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="PackagesPane" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -5194,13 +5145,6 @@
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Main_OLD.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3383">
-          <caret line="236" column="26" selection-start-line="236" selection-start-column="26" selection-end-line="236" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/BASIC_Autonomous.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1700">
@@ -5503,20 +5447,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Mainbot_Code.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2482">
-          <caret line="152" column="20" selection-start-line="152" selection-start-column="20" selection-end-line="152" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Main_OLD.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="901">
-          <caret line="90" column="25" selection-start-line="85" selection-start-column="4" selection-end-line="90" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/SensorBNO055IMUCalibration.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1020">
@@ -5540,8 +5470,36 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/FtcRobotController/src/main/java/org/firstinspires/ftc/robotcontroller/external/samples/SensorBNO055IMU.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-68">
-          <caret line="68" column="23" lean-forward="true" selection-start-line="68" selection-start-column="23" selection-end-line="68" selection-end-column="23" />
+        <state relative-caret-position="442">
+          <caret line="68" column="23" selection-start-line="68" selection-start-column="23" selection-end-line="68" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="jar://$USER_HOME$/AppData/Local/Android/Sdk/platforms/android-23/android.jar!/java/lang/Thread.class">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="193">
+          <caret line="186" column="29" selection-start-line="186" selection-start-column="29" selection-end-line="186" selection-end-column="29" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/readme.md">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="37" column="78" lean-forward="true" selection-start-line="37" selection-start-column="78" selection-end-line="37" selection-end-column="78" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Mainbot_Code.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="118" column="34" selection-start-line="118" selection-start-column="34" selection-end-line="118" selection-end-column="34" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Main_OLD.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <caret line="89" column="20" selection-start-line="89" selection-start-column="20" selection-end-line="89" selection-end-column="20" />
         </state>
       </provider>
     </entry>
@@ -5555,39 +5513,28 @@
         </state>
       </provider>
     </entry>
-    <entry file="jar://$USER_HOME$/AppData/Local/Android/Sdk/platforms/android-23/android.jar!/java/lang/Thread.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="193">
-          <caret line="186" column="29" selection-start-line="186" selection-start-column="29" selection-end-line="186" selection-end-column="29" />
-          <folding>
-            <element signature="e#4823#4824#0" expanded="true" />
-            <element signature="e#4874#4875#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/TeamCode/src/main/java/org/firstinspires/ftc/teamcode/Autonomous_Depot.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="133">
-          <caret line="363" column="2" selection-start-line="363" selection-start-column="2" selection-end-line="363" selection-end-column="2" />
+        <state relative-caret-position="303">
+          <caret line="330" column="43" lean-forward="true" selection-start-line="330" selection-start-column="43" selection-end-line="330" selection-end-column="43" />
           <folding>
             <element signature="imports" expanded="true" />
-            <element signature="e#15867#16300#0" expanded="true" />
-            <element signature="e#16299#16300#0" expanded="true" />
-            <element signature="e#16367#16551#0" expanded="true" />
-            <element signature="e#16550#16551#0" expanded="true" />
-            <element signature="e#16587#16771#0" expanded="true" />
-            <element signature="e#16770#16771#0" expanded="true" />
-            <element signature="e#16839#17034#0" expanded="true" />
-            <element signature="e#17033#17034#0" expanded="true" />
-            <element signature="e#17069#17265#0" expanded="true" />
-            <element signature="e#17264#17265#0" expanded="true" />
-            <element signature="e#17301#17496#0" expanded="true" />
-            <element signature="e#17495#17496#0" expanded="true" />
-            <element signature="e#17562#17727#0" expanded="true" />
-            <element signature="e#17726#17727#0" expanded="true" />
-            <element signature="e#17761#18168#0" expanded="true" />
-            <element signature="e#18167#18168#0" expanded="true" />
+            <element signature="e#17209#17642#0" expanded="true" />
+            <element signature="e#17641#17642#0" expanded="true" />
+            <element signature="e#17709#17893#0" expanded="true" />
+            <element signature="e#17892#17893#0" expanded="true" />
+            <element signature="e#17929#18113#0" expanded="true" />
+            <element signature="e#18112#18113#0" expanded="true" />
+            <element signature="e#18181#18376#0" expanded="true" />
+            <element signature="e#18375#18376#0" expanded="true" />
+            <element signature="e#18411#18607#0" expanded="true" />
+            <element signature="e#18606#18607#0" expanded="true" />
+            <element signature="e#18643#18838#0" expanded="true" />
+            <element signature="e#18837#18838#0" expanded="true" />
+            <element signature="e#18904#19069#0" expanded="true" />
+            <element signature="e#19068#19069#0" expanded="true" />
+            <element signature="e#19103#19510#0" expanded="true" />
+            <element signature="e#19509#19510#0" expanded="true" />
           </folding>
         </state>
       </provider>
