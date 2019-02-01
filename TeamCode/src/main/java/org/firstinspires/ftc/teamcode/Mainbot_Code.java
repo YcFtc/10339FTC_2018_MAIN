@@ -112,6 +112,10 @@ public class Mainbot_Code extends LinearOpMode {
 
         double linearLiftPower;
 
+        boolean aPressed = false;
+        boolean aLastPass = false;
+        boolean reverse = false;
+
         boolean turbo;
 
         linearMotorLift.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -135,6 +139,21 @@ public class Mainbot_Code extends LinearOpMode {
 
             backleftDrivePower = Range.clip(backleftDrivePower * Math.abs(backleftDrivePower), -1, 1);
             backrightDrivePower = Range.clip(backrightDrivePower * Math.abs(backrightDrivePower), -1, 1);
+
+            aPressed = gamepad1.a;
+            if(aPressed && !aLastPass)
+            {
+                reverse = !reverse;
+            }
+            aLastPass = aPressed;
+
+            if (reverse) {
+                frontleftDrivePower = -frontleftDrivePower;
+                frontrightDrivePower = -frontrightDrivePower;
+
+                backleftDrivePower = -backleftDrivePower;
+                backrightDrivePower = -backrightDrivePower;
+            }
 
             if (!turbo) {
                 frontleftDrivePower = frontleftDrivePower / 2;

@@ -165,7 +165,7 @@ public class Autonomous_Depot extends LinearOpMode {
 
             slideMotor.setPower(1);
 
-            sleep(3500);
+            while (slideMotor.isBusy()) Thread.yield();
 
             frontleftDrive.setPower(-0.3);
             frontrightDrive.setPower(-0.3);
@@ -191,6 +191,21 @@ public class Autonomous_Depot extends LinearOpMode {
             while (!linearSlideIn.isPressed()) Thread.yield();
 
             slideMotor.setPower(0);
+
+
+            frontleftDrive.setPower(0.3);
+            frontrightDrive.setPower(0.3);
+
+            backleftDrive.setPower(0.3);
+            backrightDrive.setPower(0.3);
+
+            sleep(300);
+
+            frontleftDrive.setPower(0);
+            frontrightDrive.setPower(0);
+
+            backleftDrive.setPower(0);
+            backrightDrive.setPower(0);
 
             //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //Sampling
@@ -322,58 +337,36 @@ public class Autonomous_Depot extends LinearOpMode {
             //Angles order is ZYX
             //IMU left is bigger
 
-            while (true){
+            do {
                 telemetry.update();
 
                 if (angles.firstAngle < -10) RUN_DRIVE_MANUAL(0.1, -0.1);
                 else if (angles.firstAngle > 10) RUN_DRIVE_MANUAL(-0.1, 0.1);
-                else {
-                    RUN_DRIVE_MANUAL(0, 0);
 
-                    sleep(200);
+            } while (angles.firstAngle < -10 && angles.firstAngle > 10);
 
-                    break;
-                }
-            }
+            RUN_DRIVE_MANUAL(0, 0);
+
+            sleep(200);
 
             int encoderStart = frontleftDrive.getCurrentPosition();
 
-            while (true) {
+            do {
                 telemetry.update();
 
                 if (angles.firstAngle < -5) RUN_DRIVE_MANUAL(0.3, 0.25);
                 else if (angles.firstAngle > 5) RUN_DRIVE_MANUAL(0.25, 0.3);
                 else RUN_DRIVE_MANUAL(0.3, 0.3);
 
-                if ((frontleftDrive.getCurrentPosition() - encoderStart) <= (537/*encoder value*/ * 2)){
-                    RUN_DRIVE_MANUAL(0, 0);
+            } while ((frontleftDrive.getCurrentPosition() - encoderStart) <= (537/*encoder value*/ * 2));
 
-                    sleep(200);
-
-                    break;
-                }
-            }
+            sleep(200);
 
             knocker.setPosition(1);
 
-            sleep(1000);
+            sleep(750);
 
             knocker.setPosition(0);
-
-/*            new Thread() {
-                @Override
-                public void run() {
-                    try {
-                        this.sleep(3000);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-
-
-                    // your code here
-
-                }
-            }.start();*/
 
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());

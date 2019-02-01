@@ -145,6 +145,21 @@ public class Autonomous_Main extends LinearOpMode {
 
             slideMotor.setPower(0);
 
+
+            frontleftDrive.setPower(0.3);
+            frontrightDrive.setPower(0.3);
+
+            backleftDrive.setPower(0.3);
+            backrightDrive.setPower(0.3);
+
+            sleep(300);
+
+            frontleftDrive.setPower(0);
+            frontrightDrive.setPower(0);
+
+            backleftDrive.setPower(0);
+            backrightDrive.setPower(0);
+
             //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
             //Sampling Portion
             //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
