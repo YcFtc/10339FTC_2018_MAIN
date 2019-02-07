@@ -125,7 +125,7 @@ public class Mainbot_Code extends LinearOpMode {
         rightIntake.setPosition(0);
 
         while (opModeIsActive()) {
-            turbo = gamepad1.start;
+            turbo = gamepad1.start || gamepad2.start;
 
             frontleftDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ - gamepad1.right_stick_x /*Turning*/ - gamepad1.left_stick_x /*Strafing*/;
             frontrightDrivePower = -gamepad1.left_stick_y /*For driving forward/backward*/ + gamepad1.right_stick_x /*Turning*/ + gamepad1.left_stick_x /*Strafing*/;
@@ -140,7 +140,7 @@ public class Mainbot_Code extends LinearOpMode {
             backleftDrivePower = Range.clip(backleftDrivePower * Math.abs(backleftDrivePower), -1, 1);
             backrightDrivePower = Range.clip(backrightDrivePower * Math.abs(backrightDrivePower), -1, 1);
 
-            aPressed = gamepad1.a;
+            aPressed = gamepad1.dpad_right || gamepad2.dpad_right;
             if(aPressed && !aLastPass)
             {
                 reverse = !reverse;
@@ -170,27 +170,27 @@ public class Mainbot_Code extends LinearOpMode {
             backrightDrive.setPower(backrightDrivePower);
 
             if (!turbo) {
-                if (gamepad1.dpad_up) linearMotorLift.setPower(0.5);
-                else if (gamepad1.dpad_down) linearMotorLift.setPower(-0.5);
+                if (gamepad1.dpad_up || gamepad2.dpad_up) linearMotorLift.setPower(0.5);
+                else if (gamepad1.dpad_down || gamepad2.dpad_down) linearMotorLift.setPower(-0.5);
                 else linearMotorLift.setPower(0);
             } else {
-                if (gamepad1.dpad_up) linearMotorLift.setPower(1);
-                else if (gamepad1.dpad_down) linearMotorLift.setPower(-1);
+                if (gamepad1.dpad_up || gamepad2.dpad_up) linearMotorLift.setPower(1);
+                else if (gamepad1.dpad_down || gamepad2.dpad_down) linearMotorLift.setPower(-1);
                 else linearMotorLift.setPower(0);
             }
 
-            if (gamepad1.y) linearMotor.setPower(1);
-            else if (gamepad1.a) linearMotor.setPower(-1);
+            if (gamepad1.y || gamepad2.y) linearMotor.setPower(1);
+            else if (gamepad1.a || gamepad2.a) linearMotor.setPower(-1);
             else linearMotor.setPower(0);
 
-            if (gamepad1.left_bumper) leftIntake.setPosition(0);
-            else if (gamepad1.left_trigger != 0) leftIntake.setPosition(1);
+            if (gamepad1.left_bumper || gamepad2.left_bumper) leftIntake.setPosition(0);
+            else if ((gamepad1.left_trigger != 0) || (gamepad2.left_trigger != 0)) leftIntake.setPosition(1);
 
-            if (gamepad1.right_bumper) rightIntake.setPosition(1);
-            else if (gamepad1.right_trigger != 0) rightIntake.setPosition(0);
+            if (gamepad1.right_bumper || gamepad2.right_bumper) rightIntake.setPosition(1);
+            else if ((gamepad1.right_trigger != 0)  || (gamepad2.right_trigger != 0)) rightIntake.setPosition(0);
 
-            if (gamepad1.x && !linearSlideOut.isPressed()) slideMotor.setPower(1);
-            else if (gamepad1.b && !linearSlideIn.isPressed()) slideMotor.setPower(-1);
+            if ((gamepad1.x || gamepad2.x) && !linearSlideOut.isPressed()) slideMotor.setPower(1);
+            else if ((gamepad1.b || gamepad2.b) && !linearSlideIn.isPressed()) slideMotor.setPower(-1);
             else slideMotor.setPower(0);
 
 /*
