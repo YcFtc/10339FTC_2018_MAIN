@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -19,7 +20,7 @@ public class Mainbot_Code extends LinearOpMode {
     private DcMotor backleftDrive = null;
     private DcMotor backrightDrive = null;
 
-//    private Servo RGB = null;
+    private RevBlinkinLedDriver RGB = null;
 
 //    private TouchSensor topTouch = null;
 //    private TouchSensor lowerTouch = null;
@@ -51,7 +52,7 @@ public class Mainbot_Code extends LinearOpMode {
         backleftDrive = hardwareMap.get(DcMotor.class, "bl");
         backrightDrive = hardwareMap.get(DcMotor.class, "br");
 
-//        RGB = hardwareMap.get(Servo.class, "rgb");
+        RGB = hardwareMap.get(RevBlinkinLedDriver.class, "rgb");
 
 //        topTouch = hardwareMap.get(TouchSensor.class, "tt");
 //        lowerTouch = hardwareMap.get(TouchSensor.class, "lt");
@@ -103,7 +104,7 @@ public class Mainbot_Code extends LinearOpMode {
         liftStop.setPosition(0);
 */
 
-//        double RGB_status = 0;
+        double RGB_status = 0;
 
         waitForStart();
         runtime.reset();
@@ -140,7 +141,7 @@ public class Mainbot_Code extends LinearOpMode {
             backleftDrivePower = Range.clip(backleftDrivePower * Math.abs(backleftDrivePower), -1, 1);
             backrightDrivePower = Range.clip(backrightDrivePower * Math.abs(backrightDrivePower), -1, 1);
 
-            aPressed = gamepad1.dpad_right || gamepad2.dpad_right;
+/*            aPressed = gamepad1.dpad_right || gamepad2.dpad_right;
             if(aPressed && !aLastPass)
             {
                 reverse = !reverse;
@@ -154,7 +155,7 @@ public class Mainbot_Code extends LinearOpMode {
                 backleftDrivePower = -backleftDrivePower;
                 backrightDrivePower = -backrightDrivePower;
             }
-
+*/
             if (!turbo) {
                 frontleftDrivePower = frontleftDrivePower / 2;
                 frontrightDrivePower = frontrightDrivePower / 2;
