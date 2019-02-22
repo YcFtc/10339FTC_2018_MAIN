@@ -50,8 +50,8 @@ public class BASIC_Autonomous extends LinearOpMode {
 
             slideMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
-            //1120 * 5.5 wheel turns
-            slideMotor.setTargetPosition(6160);
+            //1120 * 3 wheel turns
+            slideMotor.setTargetPosition(1120 * 3);
 
             slideMotor.setPower(1);
 

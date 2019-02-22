@@ -185,10 +185,10 @@ public class Mainbot_Code extends LinearOpMode {
             else linearMotor.setPower(0);
 
             if (gamepad1.left_bumper || gamepad2.left_bumper) leftIntake.setPosition(0);
-            else if ((gamepad1.left_trigger > 0.2) || (gamepad2.left_trigger > 0.2)) leftIntake.setPosition(1);
+            else if ((gamepad1.left_trigger > 0.75) || (gamepad2.left_trigger > 0.75)) leftIntake.setPosition(1);
 
             if (gamepad1.right_bumper || gamepad2.right_bumper) rightIntake.setPosition(1);
-            else if ((gamepad1.right_trigger > 0.2)  || (gamepad2.right_trigger > 0.2)) rightIntake.setPosition(0);
+            else if ((gamepad1.right_trigger > 0.75)  || (gamepad2.right_trigger > 0.75)) rightIntake.setPosition(0);
 
             if ((gamepad1.x || gamepad2.x) && !linearSlideOut.isPressed()) slideMotor.setPower(1);
             else if ((gamepad1.b || gamepad2.b) && !linearSlideIn.isPressed()) slideMotor.setPower(-1);
@@ -201,6 +201,7 @@ public class Mainbot_Code extends LinearOpMode {
 */
 
             telemetry.addData("Status", "Run Time: " + runtime.toString());
+            telemetry.addData("SlideMotor encoder position", slideMotor.getCurrentPosition());
             telemetry.update();
         }
     }
